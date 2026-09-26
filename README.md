@@ -71,8 +71,95 @@ countries and as low as $100 a year. <a href="https://app.harnessmd.com/console/
 > office floor, and **your clone** (Michael) routes work between them while you watch. He's the
 > boss of the floor; you're still the boss of him.
 
+## Glass UI
+
+This fork redesigns the application chrome around the office in an Apple-inspired "glass studio" style — translucent panels over a soft backdrop, pill navigation, outlined pill buttons and round controls — and adds a **theme picker to the top bar** with six palettes.
+
+<p align="center">
+  <sub>Six themes. Same office. Same agents.</sub>
+</p>
+
+### Original
+
+<p align="center">
+  <img src="./docs/glass-original.png" width="100%" alt="Original theme">
+</p>
+
+<p align="center">
+  <sub><b>Original</b> — The classic cream-and-ink Munder Difflin identity, in glass. The default.</sub>
+</p>
+
+---
+
+### Smoke
+
+<p align="center">
+  <img src="./docs/glass-smoke.png" width="100%" alt="Smoke theme">
+</p>
+
+<p align="center">
+  <sub><b>Smoke</b> — Warm smoke glass with ivory pills — the look this fork was designed around.</sub>
+</p>
+
+---
+
+### Obsidian
+
+<p align="center">
+  <img src="./docs/glass-obsidian.png" width="100%" alt="Obsidian theme">
+</p>
+
+<p align="center">
+  <sub><b>Obsidian</b> — Near-black monochrome. The office floor turns greyscale to match.</sub>
+</p>
+
+---
+
+### Ember
+
+<p align="center">
+  <img src="./docs/glass-ember.png" width="100%" alt="Ember theme">
+</p>
+
+<p align="center">
+  <sub><b>Ember</b> — Graphite with a restrained orange accent.</sub>
+</p>
+
+---
+
+### Violet
+
+<p align="center">
+  <img src="./docs/glass-violet.png" width="100%" alt="Violet theme">
+</p>
+
+<p align="center">
+  <sub><b>Violet</b> — Deep violet with magenta accents.</sub>
+</p>
+
+---
+
+### Arctic
+
+<p align="center">
+  <img src="./docs/glass-arctic.png" width="100%" alt="Arctic theme">
+</p>
+
+<p align="center">
+  <sub><b>Arctic</b> — Clean white and cool grey.</sub>
+</p>
+
+---
+
+**What stays the same:** everything that makes Munder Difflin work. The pixel-art office, its characters and pathfinding, the agents, terminals, tasks, memory, triggers and settings are untouched — no changes to `src/main`, `src/preload`, the Pixi scene or the art assets. Themes reach the office only through a reversible filter on its canvas, and switching themes never restarts an agent, clears a terminal or resets the floor.
+
+**Details:** your theme choice persists across restarts; all six palettes meet WCAG AA text contrast on the rendered glass; the app honours your OS reduced-transparency, increased-contrast and reduced-motion settings; and there is no blur anywhere, so the office runs as fast as before (it also renders correctly when Electron falls back to software rendering on Linux). The design rules live in [DESIGN.md](./DESIGN.md#0-chrome-themes-v051--glass-studio).
+
+**Try it:** `git clone`, `npm install`, `npm run dev`, then pick a theme from the button at the top right of the window.
+
 ## Contents
 
+- [Glass UI](#glass-ui)
 - [Supported agents](#supported-agents)
 - [What it is](#what-it-is)
 - [How it works](#how-it-works)
