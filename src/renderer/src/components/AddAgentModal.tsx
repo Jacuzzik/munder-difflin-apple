@@ -509,7 +509,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0,
-        background: 'rgba(26, 19, 32, 0.6)',
+        background: 'var(--cth-scrim)', animation: 'cth-fade-in 160ms var(--cth-ease)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         // Must sit above fullscreen terminal/file overlays (250/280) and their
         // hover popovers. The fullscreen Add Agent button uses this same modal.

@@ -11,7 +11,7 @@ import {
   setTerminalFontSize,
   useTerminalFontSize
 } from './terminalFontSize';
-import { useAppTheme } from '@/design/theme';
+import { useAppPalette, type AppPalette } from '@/design/theme';
 
 // Zoom lives in ./terminalFontSize so anything outside the terminal (the message
 // composer) can scale with it too; these aliases keep the call sites below short.
@@ -22,7 +22,6 @@ const MAX_FONT_SIZE = MAX_TERMINAL_FONT_SIZE;
 // v0.3.4: the terminal follows the APP-WIDE theme (design/theme.ts, toggled in
 // the title bar) instead of keeping its own light/dark switch — one theme for
 // chrome, terminal, and (via config.terminalTheme) each agent's TUI palette.
-type PtyTheme = 'light' | 'dark';
 
 const zoomBtnStyle: CSSProperties = {
   width: 18,
@@ -108,7 +107,42 @@ const darkTheme = {
   brightWhite:  '#EFEDE9'
 };
 
-const THEMES: Record<PtyTheme, typeof lightTheme> = { light: lightTheme, dark: darkTheme };
+// v0.5 palettes: each rides its base mode's ANSI set (tuned for that mode's
+// contrast) and only re-states the surface slots so the grid sits flush with
+// the panel around it. Keep these in step with tokens.css paper-100 / ink-900.
+const THEMES: Record<AppPalette, typeof lightTheme> = {
+  original: lightTheme,
+  arctic: {
+    ...lightTheme,
+    background: '#FFFFFF', cursorAccent: '#FFFFFF',       // = arctic --cth-paper-100
+    foreground: '#1B1D21', selectionForeground: '#1B1D21', // = arctic --cth-ink-900
+    selectionBackground: '#DCE7EE', cursor: '#3F5E7C'
+  },
+  smoke: {
+    ...darkTheme,
+    background: '#2A2724', cursorAccent: '#2A2724',       // = smoke --cth-scope-well
+    foreground: '#F4F1EA', selectionForeground: '#F4F1EA',
+    selectionBackground: '#4A4540', cursor: '#EFEAD8', black: '#3A3632'
+  },
+  obsidian: {
+    ...darkTheme,
+    background: '#0E0E10', cursorAccent: '#0E0E10',
+    foreground: '#E4E4E6', selectionForeground: '#E4E4E6',
+    selectionBackground: '#2E2E33', cursor: '#E4E4E6', black: '#19191C'
+  },
+  ember: {
+    ...darkTheme,
+    background: '#121010', cursorAccent: '#121010',
+    foreground: '#EDE6DF', selectionForeground: '#EDE6DF',
+    selectionBackground: '#3A2413', cursor: '#FF8A2B', black: '#1E1B19'
+  },
+  violet: {
+    ...darkTheme,
+    background: '#110E16', cursorAccent: '#110E16',
+    foreground: '#EDE7F3', selectionForeground: '#EDE7F3',
+    selectionBackground: '#34193B', cursor: '#D05FE0', black: '#1D1825'
+  }
+};
 
 export interface PtyTerminalViewProps {
   ptyId: string;
@@ -132,7 +166,7 @@ export function PtyTerminalView({ ptyId, onStreamData, onUserPrompt, onToggleFul
   onUserPromptRef.current = onUserPrompt;
   const fontSize = useTerminalFontSize();
   const fontSizeRef = useRef(fontSize);
-  const ptyTheme: PtyTheme = useAppTheme();
+  const ptyTheme: AppPalette = useAppPalette();
   const ptyThemeRef = useRef(ptyTheme);
   ptyThemeRef.current = ptyTheme;
 

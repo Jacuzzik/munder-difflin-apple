@@ -84,7 +84,7 @@ export function SettingsHeroCard() {
     <div style={{
       display: 'flex', flexDirection: 'column',
       background: 'var(--cth-paper-100)',
-      border: `2px solid ${INK}`
+      border: '1px solid var(--cth-ink-300)', borderRadius: 'var(--cth-radius-md)'
     }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 14 }}>
         {/* Identity: name, the running version in plain sight, the plan. */}
@@ -125,7 +125,7 @@ export function SettingsHeroCard() {
         {hero.notice && (
           <div style={{
             padding: '8px 10px', fontSize: 12, lineHeight: 1.5, color: INK,
-            background: 'var(--cth-lemon-light)', border: `2px solid ${INK}`
+            background: 'var(--cth-lemon-light)', border: '1px solid var(--cth-ink-300)', borderRadius: 'var(--cth-radius-md)'
           }}>{hero.notice}</div>
         )}
 
@@ -133,7 +133,7 @@ export function SettingsHeroCard() {
         <div style={{
           padding: '12px 14px',
           background: 'var(--cth-lilac-light)',
-          border: `2px solid ${INK}`
+          border: '1px solid var(--cth-ink-300)', borderRadius: 'var(--cth-radius-md)'
         }}>
           <span style={{
             display: 'inline-block', fontFamily: MONO, fontSize: 9, letterSpacing: '.18em',
@@ -154,11 +154,12 @@ export function SettingsHeroCard() {
           display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
           padding: '12px 14px',
           background: INK, color: 'var(--cth-paper-100)',
+          borderRadius: 'var(--cth-radius-md)',
           marginTop: 2
         }}>
           <div style={{
             fontFamily: MONO, fontSize: 30, fontWeight: 700, lineHeight: 0.9,
-            letterSpacing: '-.05em', color: 'var(--cth-lemon)', textAlign: 'center', flexShrink: 0
+            letterSpacing: '-.05em', color: 'var(--cth-inverse-accent)', textAlign: 'center', flexShrink: 0
           }}>
             50<span style={{
               display: 'block', fontSize: 8, letterSpacing: '.2em', fontWeight: 500,
@@ -187,7 +188,7 @@ export function SettingsHeroCard() {
             display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
             padding: 10,
             background: 'var(--cth-cream-100)',
-            border: `2px solid ${INK}`
+            border: '1px solid var(--cth-ink-300)', borderRadius: 'var(--cth-radius-md)'
           }}>
             <span style={{
               fontFamily: MONO, fontSize: 9, letterSpacing: '.18em',
@@ -204,7 +205,7 @@ export function SettingsHeroCard() {
         {/* Actions that belong to the app rather than to any setting below. */}
         <div style={{
           display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center',
-          paddingTop: 12, borderTop: `2px solid ${INK}`
+          paddingTop: 12, borderTop: '1px solid var(--cth-ink-100)'
         }}>
           <PixelButton variant="secondary" size="sm" onClick={showReleaseNotes}>
             <span title={t('settingsHero.whatsNewTitle')}

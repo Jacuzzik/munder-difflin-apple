@@ -19,15 +19,19 @@ html, body, #root {
   overflow: hidden;
 }
 
+/* v0.5.1: a soft, STATIC ambient backdrop the glass panels float over (no
+   image, no motion). html keeps the flat cream-100 as the first-paint colour. */
+body, #root { background: var(--cth-ambient); }
 body {
-  /* tiny diagonal cream noise — pure CSS, no images */
-  background-image:
-    repeating-linear-gradient(
-      45deg,
-      rgba(232, 217, 160, 0.20) 0 1px,
-      transparent 1px 6px
-    );
+  background-image: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01";
+  /* Ease the jump between light and dark palettes instead of a hard flash. */
+  transition: background-color var(--cth-dur-med) var(--cth-ease);
 }
+
+::selection { background: var(--cth-selection); }
 
 button, input, textarea, select {
   font-family: inherit;
@@ -63,11 +67,17 @@ input, textarea, [contenteditable='true'] {
 /* Pixel-snapping for any rasterised content */
 canvas, img, svg { image-rendering: pixelated; image-rendering: crisp-edges; }
 
-/* Focus ring — 2px outer offset, ink */
+/* Focus ring — v0.5: a soft accent halo that follows the control's own radius
+   (box-shadow rather than outline, so rounded buttons get a rounded ring). The
+   outline stays as a transparent fallback for forced-colors mode. */
 :focus-visible {
-  outline: 1px solid var(--cth-ink-300);
+  outline: 2px solid transparent;
   outline-offset: 2px;
+  box-shadow: inset 0 0 0 1px var(--cth-ink-300), var(--cth-focus-ring) !important;
 }
+/* xterm's hidden input takes focus on every click; it is invisible, and must
+   never pick up chrome styling. */
+.xterm-helper-textarea:focus-visible { box-shadow: none !important; }
 
 /* Text inputs — resting border faint, focused border dark and thicker.
    The resting 1px ink-100 is deliberately quiet so a panel full of boxes stays
@@ -80,21 +90,28 @@ canvas, img, svg { image-rendering: pixelated; image-rendering: crisp-edges; }
    click into the box. Both :focus and :focus-visible: a textarea you clicked
    into is exactly as focused as one you tabbed into, and here we WANT the mouse
    case — it is the one the founder is looking at while typing. */
-.cth-input { box-shadow: inset 0 0 0 1px var(--cth-ink-100); }
+.cth-input {
+  box-shadow: inset 0 0 0 1px var(--cth-ink-100);
+  border-radius: var(--cth-radius-sm);
+  transition: box-shadow var(--cth-dur-fast) var(--cth-ease);
+}
 .cth-input:focus,
-.cth-input:focus-visible { box-shadow: inset 0 0 0 2px var(--cth-ink-700); }
+.cth-input:focus-visible { box-shadow: inset 0 0 0 1px var(--cth-ink-500), var(--cth-focus-ring) !important; }
 
 /* Custom scrollbar — chunky, pixel-feel */
+/* v0.5: slim overlay-style scrollbars — a rounded thumb inset from a clear
+   track, darker on hover. Same 12px gutter as before so no layout shifts. */
 ::-webkit-scrollbar { width: 12px; height: 12px; }
-::-webkit-scrollbar-track {
-  background: var(--cth-cream-200);
-  box-shadow: inset 0 0 0 1px var(--cth-ink-100);
-}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-corner { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: var(--cth-ink-700);
-  box-shadow: inset 0 0 0 1px var(--cth-ink-300);
+  background: var(--cth-ink-300);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+  min-height: 32px;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--cth-ink-900); }
+::-webkit-scrollbar-thumb:hover { background: var(--cth-ink-500); background-clip: padding-box; }
 
 /* commit-graph (open-source git visualiser) — harmonise with the pixel theme */
 /* Commit history. The `* { font-family: … !important }` blanket that used to live
@@ -131,9 +148,10 @@ canvas, img, svg { image-rendering: pixelated; image-rendering: crisp-edges; }
   font-family: var(--cth-font-ui);
   font-size: 11px;
   line-height: 16px;
-  color: var(--cth-cream-100);
-  background: var(--cth-ink-900);
-  box-shadow: inset 0 0 0 1px var(--cth-ink-700);
+  color: var(--cth-ink-900);
+  background: var(--cth-popover-bg);
+  border-radius: var(--cth-radius-sm);
+  box-shadow: 0 0 0 0.5px var(--cth-glass-border), var(--cth-shadow-md);
   opacity: 0;
   pointer-events: none;
   /* Delay matches the native tooltip feel, so it does not flash while the
@@ -158,18 +176,8 @@ canvas, img, svg { image-rendering: pixelated; image-rendering: crisp-edges; }
   line-height: 15px;
 }
 
-/* Settings (gear) button in the title bar — a clear bordered chip with a
-   neo-brutalist hover (lemon fill + offset shadow) so it reads as a button. */
-.cth-settings-btn { transition: background 80ms steps(2), box-shadow 80ms steps(2), transform 80ms steps(2); }
-.cth-settings-btn:hover {
-  background: var(--cth-lemon) !important;
-  box-shadow: inset 0 0 0 1px var(--cth-ink-300), 2px 2px 0 0 var(--cth-ink-900) !important;
-  transform: translate(-1px, -1px);
-}
-.cth-settings-btn:active {
-  transform: translate(0, 0);
-  box-shadow: inset 0 0 0 1px var(--cth-ink-300) !important;
-}
+/* (v0.5.1: the title-bar Settings buttons use .cth-topbar-btn; the old
+   .cth-settings-btn chip style had no remaining users and was removed.) */
 
 /* Keyframes — pixel-style: step-based, no easing */
 @keyframes cth-blink {
@@ -369,3 +377,233 @@ canvas, img, svg { image-rendering: pixelated; image-rendering: crisp-edges; }
 .cth-md-card hr { margin: 0.8em 0; }
 .cth-md-card table { margin: 0.5em 0; }
 .cth-md-card th, .cth-md-card td { padding: 3px 7px; font-size: 0.9em; }
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   v0.5 — Apple-inspired chrome
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Display-slot labels. ~110 call sites set `fontFamily: var(--cth-font-display)`
+   at 8–12px, sized for the wide pixel face. Now that the token is the UI stack,
+   they become section headers: semibold, lightly tracked (small text wants
+   positive tracking), and font-size-adjust scales the x-height so an 8px slot
+   renders like ~10–11px Inter. Presentation only: no call site changes, and
+   swapping the token back restores the old look wholesale. */
+[style*="--cth-font-display"] {
+  font-weight: 600;
+  letter-spacing: 0.045em;
+  font-size-adjust: 0.7;
+}
+/* These three properties inherit, so a display-slot container would otherwise
+   push its weight/tracking/size-adjust into body text nested inside it. Any
+   descendant that declares its own UI or mono face opts back out. */
+[style*="--cth-font-display"] [style*="--cth-font-ui"],
+[style*="--cth-font-display"] [style*="--cth-font-mono"] {
+  font-weight: 400;
+  letter-spacing: normal;
+  font-size-adjust: none;
+}
+
+/* Buttons: moderate radius + responsive press. Inline border-radius (a handful
+   of flush controls) still wins, so nothing that was deliberately square moves.
+   Feedback lives on the press (Apple: respond on pointer-down). */
+button {
+  border-radius: var(--cth-radius-sm);
+  transition:
+    background-color var(--cth-dur-fast) var(--cth-ease),
+    color var(--cth-dur-fast) var(--cth-ease),
+    box-shadow var(--cth-dur-fast) var(--cth-ease),
+    transform var(--cth-dur-fast) var(--cth-ease-out);
+}
+select, input[type="text"], input[type="number"], input[type="search"],
+input[type="password"], input[type="url"], input[type="email"], textarea {
+  border-radius: var(--cth-radius-sm);
+}
+
+/* ── The simulator surface ────────────────────────────────────────────────
+   Non-destructive theme treatment: a CSS filter on the Pixi <canvas> ELEMENT.
+   It runs in the compositor on the finished frame — textures, scene graph,
+   camera and hit-testing are untouched (filters never change pointer
+   targeting), and `none` composites the canvas exactly as before. Scoped to
+   the direct canvas so DOM overlays on the floor (memory panel, empty-state
+   dialog, error note) are never filtered. */
+.cth-sim-surface {
+  width: 100%; height: 100%; padding: 10px;
+  border-radius: var(--cth-radius-xl);
+  background: var(--cth-glass-fill);
+  box-shadow: inset 0 1px 0 var(--cth-glass-edge), 0 0 0 1px var(--cth-glass-border), var(--cth-shadow-lg);
+}
+/* OfficeFloor's own host div (scene/, untouched) is rounded by its frame —
+   a CSS-only clip; the scene never learns about it. */
+.cth-sim-surface > div { border-radius: calc(var(--cth-radius-xl) - 10px); overflow: hidden; }
+.cth-sim-surface canvas {
+  filter: var(--cth-sim-filter);
+  transition: filter 280ms var(--cth-ease);
+}
+
+/* ── Top bar ────────────────────────────────────────────────────────────── */
+.cth-topbar {
+  position: relative;
+  /* Above floor overlays (MemoryPanel is 40) so the picker menu can hang over
+     the floor; below focus mode (250) and every modal, which still cover it. */
+  z-index: 45;
+  background: transparent;
+}
+/* Round glass controls (reference: the circular buttons). Icon-only buttons
+   are exact circles; labelled ones (the theme picker) are pills. */
+.cth-topbar-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 34px; min-width: 34px; padding: 0 12px; gap: 7px;
+  border: none; border-radius: var(--cth-radius-pill);
+  background: var(--cth-glass-fill);
+  box-shadow: inset 0 1px 0 var(--cth-glass-edge), 0 0 0 1px var(--cth-glass-border);
+  color: var(--cth-ink-900); cursor: pointer;
+  font-family: var(--cth-font-ui); font-size: 13px; font-weight: 500;
+}
+.cth-topbar-btn:has(> svg:only-child) { width: 34px; padding: 0; }
+.cth-topbar-btn:hover { background: color-mix(in srgb, var(--cth-glass-fill), var(--cth-ink-900) 8%); }
+.cth-topbar-btn:active { transform: scale(0.94); }
+.cth-topbar-btn[aria-expanded="true"],
+.cth-topbar-btn[aria-pressed="true"] { background: var(--cth-pill-active-bg); color: var(--cth-pill-active-fg); }
+.cth-status-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 30px; padding: 0 13px; border-radius: var(--cth-radius-pill);
+  font-family: var(--cth-font-ui); font-size: 12px; font-weight: 500;
+  color: var(--cth-ink-700); background: var(--cth-glass-fill);
+  box-shadow: inset 0 1px 0 var(--cth-glass-edge), 0 0 0 1px var(--cth-glass-border);
+  white-space: nowrap;
+}
+.cth-status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Popover (theme picker) ─────────────────────────────────────────────
+   Originates from its trigger (transform-origin top-right), materializes with
+   scale + opacity together, dismisses along the same path. */
+.cth-popover {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 400;
+  width: 272px; padding: 6px;
+  background: var(--cth-popover-bg);
+  border-radius: var(--cth-radius-lg);
+  box-shadow: 0 0 0 0.5px var(--cth-glass-border), inset 0 0.5px 0 rgba(255,255,255,0.08), var(--cth-shadow-lg);
+  transform-origin: top right;
+  animation: cth-pop-in 180ms var(--cth-ease-out);
+}
+[dir="rtl"] .cth-popover { right: auto; left: 0; transform-origin: top left; }
+@keyframes cth-pop-in {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+.cth-popover-title {
+  padding: 6px 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--cth-ink-500);
+}
+.cth-theme-option {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border: none; background: transparent; cursor: pointer;
+  border-radius: var(--cth-radius-md); text-align: start; color: var(--cth-ink-900);
+  font-family: var(--cth-font-ui);
+}
+.cth-theme-option:hover { background: var(--cth-hover); }
+.cth-theme-option:active { background: var(--cth-pressed); }
+.cth-theme-option[aria-checked="true"] { background: var(--cth-accent-soft); }
+.cth-theme-option-name { font-size: 13px; font-weight: 500; line-height: 17px; }
+.cth-theme-option-blurb { font-size: 11.5px; line-height: 15px; color: var(--cth-ink-500); }
+.cth-swatch {
+  position: relative; flex-shrink: 0; width: 34px; height: 24px; border-radius: 6px; overflow: hidden;
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,0.18), inset 0 0 0 0.5px rgba(255,255,255,0.10);
+}
+.cth-swatch > i { position: absolute; display: block; }
+.cth-swatch-sm { width: 18px; height: 12px; border-radius: 3.5px; }
+
+/* ── Workspace shell + glass scopes ─────────────────────────────────────── */
+.cth-workspace { background: transparent; }
+
+/* A glass panel: paints the material, then RE-POINTS the surface tokens for
+   everything inside (see tokens.css v0.5.1 header). No overflow clip, so menus
+   inside can still hang outside the panel; children that need the rounded clip
+   get it from the rule below. */
+.cth-glass {
+  --cth-cream-100: transparent;
+  --cth-cream-200: var(--cth-scope-o1);
+  --cth-cream-300: var(--cth-scope-o2);
+  --cth-paper-200: var(--cth-scope-o1);
+  --cth-cream-50:  var(--cth-scope-solid);
+  --cth-paper-100: var(--cth-scope-well);
+  /* Panel hairlines dissolve; the glass edge defines the panel instead. */
+  --cth-panel-border: inset 0 0 0 1px transparent;
+  background: var(--cth-glass-fill);
+  border-radius: var(--cth-radius-xl);
+  box-shadow: inset 0 1px 0 var(--cth-glass-edge), 0 0 0 1px var(--cth-glass-border), var(--cth-shadow-lg);
+}
+.cth-glass > * { border-radius: inherit; }
+
+/* Agent cards in the dock: small glass tiles… */
+.cth-glass-card {
+  --cth-cream-100: transparent;
+  --cth-cream-200: var(--cth-scope-o1);
+  --cth-paper-100: var(--cth-scope-o2);
+  --cth-panel-border: inset 0 0 0 1px transparent;
+  background: var(--cth-glass-fill);
+}
+/* …and the SELECTED one becomes a solid pill-colour card with inverted ink,
+   like the reference's highlighted card. aria-current carries the same state
+   for assistive tech, so colour is not the only signal. */
+.cth-glass-card.cth-card-selected {
+  --cth-ink-900: var(--cth-card-active-fg);
+  --cth-ink-700: color-mix(in srgb, var(--cth-card-active-fg) 82%, transparent);
+  --cth-ink-500: color-mix(in srgb, var(--cth-card-active-fg) 66%, transparent);
+  --cth-ink-300: color-mix(in srgb, var(--cth-card-active-fg) 40%, transparent);
+  --cth-ink-100: color-mix(in srgb, var(--cth-card-active-fg) 16%, transparent);
+  --cth-cream-200: color-mix(in srgb, var(--cth-card-active-fg) 7%, transparent);
+  /* disabled-control fill (PixelButton) — must stay a light step on the card */
+  --cth-cream-300: color-mix(in srgb, var(--cth-card-active-fg) 10%, transparent);
+  --cth-paper-100: color-mix(in srgb, var(--cth-card-active-fg) 9%, transparent);
+  background: var(--cth-card-active-bg);
+  color: var(--cth-card-active-fg);
+}
+
+/* ── Tabs → pills ─────────────────────────────────────────────────────────
+   Keyed off aria-selected so state and styling can never disagree. The active
+   tab is a filled pill (reference: the ivory active nav pill). */
+.cth-seg-tab, .cth-underline-tab {
+  position: relative;
+  background: transparent;
+  color: var(--cth-ink-700);
+  box-shadow: none;
+  border-radius: var(--cth-radius-pill) !important;
+}
+.cth-underline-tab { color: var(--cth-ink-500); }
+.cth-seg-tab:hover, .cth-underline-tab:hover { background: var(--cth-hover); color: var(--cth-ink-900); }
+.cth-seg-tab:active, .cth-underline-tab:active { transform: scale(0.97); }
+.cth-seg-tab[aria-selected="true"], .cth-underline-tab[aria-selected="true"] {
+  background: var(--cth-pill-active-bg);
+  color: var(--cth-pill-active-fg);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+}
+/* The strips sit on a pill track, like the reference nav. !important only
+   because the strips carry inline layout styles written for the old look. */
+[role="tablist"]:has(> .cth-seg-tab),
+[role="tablist"]:has(> .cth-underline-tab) {
+  background: var(--cth-pill-track) !important;
+  border-radius: 20px;
+  margin: 10px 12px 6px !important;
+  padding: 4px !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* ── Modal scrims ─────────────────────────────────────────────────────────
+   Dim-to-focus: every modal scrim reads --cth-scrim (lighter in light
+   palettes, deeper in dark ones) and fades in rather than snapping. The sheet
+   inside is PixelPanel's `dialog` variant, which now carries --cth-shadow-lg. */
+@keyframes cth-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Native controls follow the palette's chrome accent (radios, checkboxes,
+   sliders, progress) instead of Chromium's default blue. */
+input[type="radio"], input[type="checkbox"], input[type="range"], progress { accent-color: var(--cth-accent); }
+
+/* Inline status chips ("BOSS", "INSTALLED", "RECOMMENDED", …): ~dozens of call
+   sites build them as a display-font span with a 1px inset hairline. Round
+   their corners slightly so they match every other v0.5 surface. Radius only —
+   size, colour and layout are untouched. */
+span[style*="--cth-font-display"][style*="inset 0 0 0 1px"] { border-radius: var(--cth-radius-xs); }

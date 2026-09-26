@@ -54,8 +54,13 @@
      Mono (code/terminal). Pixelify/VT323 were the main readability drag. */
   /* Press Start 2P is latin-only by design. CJK and Arabic text in a display
      slot falls through to a system face rather than to generic monospace. */
-  --cth-font-display: "Press Start 2P", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Geeza Pro", "Noto Naskh Arabic", "Segoe UI Historic", monospace;
-  --cth-font-ui:      "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Geeza Pro", "Noto Naskh Arabic", "Segoe UI Historic", sans-serif;
+  /* v0.5: chrome labels moved off the pixel face onto the UI stack. The pixel
+     brand now lives in the logo and the floor itself; global.css turns every
+     display-slot label into a small-caps section header (weight + tracking +
+     font-size-adjust, so an 8px slot sized for Press Start 2P stays legible).
+     Swap this token back to "Press Start 2P", … to restore the old chrome. */
+  --cth-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI Variable", "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Geeza Pro", "Noto Naskh Arabic", "Segoe UI Historic", sans-serif;
+  --cth-font-ui:      -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", BlinkMacSystemFont, "Segoe UI", system-ui, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Geeza Pro", "Noto Naskh Arabic", "Segoe UI Historic", sans-serif;
   --cth-font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, "PingFang SC", "Microsoft YaHei", "Noto Sans Mono CJK SC", "Noto Sans CJK SC", "Geeza Pro", "Noto Naskh Arabic", "Segoe UI Historic", monospace;
 
   /* Type scale — v0.3.4: one step tighter (Inter reads larger than Pixelify
@@ -84,7 +89,9 @@
   /* Panel borders — v0.3.4: single hairlines. The old three-layer package
      boxed every surface in thick chrome; structure now comes from surface
      contrast, not outlines. Dialogs keep one slightly stronger line. */
-  --cth-panel-border:          inset 0 0 0 1px var(--cth-ink-300);
+  /* v0.5: panels separate by surface + a softened hairline; controls keep the
+     full-strength ink-300 edge (PixelButton) so hit targets stay findable. */
+  --cth-panel-border:          inset 0 0 0 1px color-mix(in srgb, var(--cth-ink-300) 55%, transparent);
   /* Text that sits ON an accent fill (a selected tab, a filled chip). The
      accents are LIGHT surfaces in BOTH themes, so this is dark in both — using
      ink-900 here inverts with the theme and paints near-white on a pale accent,
@@ -93,7 +100,7 @@
 
   --cth-panel-border-inset:    inset 0 0 0 1px var(--cth-ink-100);
   --cth-panel-border-terminal: inset 0 0 0 1px var(--cth-ink-300);
-  --cth-panel-border-dialog:   inset 0 0 0 1px var(--cth-ink-500);
+  --cth-panel-border-dialog:   inset 0 0 0 0.5px var(--cth-ink-300), var(--cth-shadow-lg);
 }
 
 /* ── Dark theme ──────────────────────────────────────────────────────────────
@@ -170,4 +177,405 @@
 
   /* Hard shadow reads as depth, not void */
   --cth-shadow-hard: 4px 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   v0.5 — Apple-inspired structure + five palettes
+   ════════════════════════════════════════════════════════════════════════════
+   Structure (radius, elevation, material, motion) is shared by every palette.
+   Palettes only move colour. `data-cth-theme` (light|dark) still selects the
+   base ramp above; `data-cth-palette` layers on top of it. design/theme.ts
+   stamps both. None of these tokens are read by the Pixi scene — the floor
+   renders from its own theme bundles and is only ever FILTERED, below. */
+:root {
+  /* Corner radii — moderate, hierarchy-driven. Controls < cards < sheets. */
+  --cth-radius-xs: 4px;
+  --cth-radius-sm: 8px;
+  --cth-radius-md: 12px;
+  --cth-radius-lg: 18px;
+  --cth-radius-xl: 24px;
+  --cth-radius-pill: 999px;
+
+  /* Soft elevation. Bigger surfaces read as thicker (deeper, softer shadow). */
+  --cth-shadow-sm: 0 1px 2px rgba(20, 16, 26, 0.06), 0 0 0 0.5px rgba(20, 16, 26, 0.06);
+  --cth-shadow-md: 0 4px 14px rgba(20, 16, 26, 0.08), 0 1px 3px rgba(20, 16, 26, 0.06);
+  --cth-shadow-lg: 0 18px 48px rgba(20, 16, 26, 0.16), 0 2px 8px rgba(20, 16, 26, 0.08);
+
+  /* Materials. No backdrop blur anywhere (see the v0.5.1 header below):
+     popovers/tooltips are opaque raised surfaces. */
+  --cth-popover-bg:   #FFFDF5;
+  --cth-glass-border: rgba(26, 19, 32, 0.08);
+  --cth-scrim:        rgba(20, 16, 26, 0.28);
+
+  /* Chrome accent — interactive emphasis (focus, selection, primary). Agent
+     accents (coral, mint, …) stay per-agent identity and are NOT this. */
+  --cth-accent:      #1A1320;
+  --cth-accent-soft: rgba(26, 19, 32, 0.07);
+  --cth-focus-ring:  0 0 0 3px rgba(79, 159, 175, 0.38);
+  --cth-hover:       rgba(26, 19, 32, 0.05);
+  --cth-pressed:     rgba(26, 19, 32, 0.09);
+  --cth-selection:   rgba(79, 159, 175, 0.24);
+
+  /* Motion — critically damped feel; short, never bouncy for chrome. */
+  --cth-ease:        cubic-bezier(0.25, 0.1, 0.25, 1);
+  --cth-ease-out:    cubic-bezier(0.2, 0.8, 0.2, 1);
+  --cth-dur-fast:    120ms;
+  --cth-dur-med:     200ms;
+
+  /* Simulator treatment. Applied as a CSS filter to the floor's <canvas>
+     element only — never to textures, never to scene state. `none` = the
+     canvas is composited exactly as before. */
+  --cth-sim-filter: none;
+}
+
+:root[data-cth-theme='dark'] {
+  color-scheme: dark;
+  --cth-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.40), 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+  --cth-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.35);
+  --cth-shadow-lg: 0 22px 56px rgba(0, 0, 0, 0.60), 0 2px 10px rgba(0, 0, 0, 0.40);
+  --cth-popover-bg:   #26262C;
+  --cth-glass-border: rgba(255, 255, 255, 0.07);
+  --cth-scrim:        rgba(0, 0, 0, 0.50);
+  --cth-accent:      #DEDBD6;
+  --cth-accent-soft: rgba(255, 255, 255, 0.07);
+  --cth-focus-ring:  0 0 0 3px rgba(111, 179, 196, 0.40);
+  --cth-hover:       rgba(255, 255, 255, 0.05);
+  --cth-pressed:     rgba(255, 255, 255, 0.09);
+  --cth-selection:   rgba(111, 179, 196, 0.30);
+  /* Hard offset shadow retired in favour of soft elevation. */
+  --cth-shadow-hard: var(--cth-shadow-md);
+}
+:root { --cth-shadow-hard: var(--cth-shadow-md); }
+
+/* Accent text on an INVERTED (ink-filled) surface — e.g. the big "50" in the
+   Settings hero. Lemon works on dark ink; in the dark palettes ink is light,
+   so this must be a deep tone instead (all >= 3:1 as large bold text). */
+:root { --cth-inverse-accent: var(--cth-lemon); }
+:root[data-cth-palette='smoke']    { --cth-inverse-accent: #6B4F36; }
+:root[data-cth-palette='obsidian'] { --cth-inverse-accent: #3E3E44; }
+:root[data-cth-palette='ember']    { --cth-inverse-accent: #A94A08; }
+:root[data-cth-palette='violet']   { --cth-inverse-accent: #8E2A9E; }
+
+/* ── Referenced-but-undefined tokens (found in the v0.5 runtime audit) ──────
+   Components already wrote `var(--cth-mint-700, #1f7a4d)` and friends, but the
+   tokens never existed, so the hex fallback ALWAYS rendered — pastel chips and
+   dark-red text stayed light-mode in every dark theme. Defining them here fixes
+   every call site at once. Light values ARE the fallbacks that were rendering,
+   so Original/Arctic are pixel-identical; dark values follow the dark ramp. */
+:root {
+  --cth-paprika-light: #f6d3c4;  --cth-paprika-700: #b3502e;
+  --cth-mint-700: #1f7a4d;       --cth-sky-700: #1f5a8a;
+  --cth-amber-light: #f6e2b3;
+  --cth-danger: #c0392b;         --cth-warn: #b8860b;      --cth-green: #2f8f4e;
+  /* Error copy. Was a literal #6E1423 (≈1.4:1 on the dark grounds). */
+  --cth-danger-text: #6E1423;
+}
+:root[data-cth-theme='dark'] {
+  --cth-paprika-light: #3B2724;  --cth-paprika-700: #E39A7E;
+  --cth-mint-700: #7CC79B;       --cth-sky-700: #86B9DE;
+  --cth-amber-light: #332C1D;
+  --cth-danger: #E57F72;         --cth-warn: #D6A84E;      --cth-green: #62B67E;
+  --cth-danger-text: #F0A39A;
+}
+
+/* ── Original ────────────────────────────────────────────────────────────────
+   The base light ramp above IS Original. Nothing to override: cream + ink
+   identity, soft structure, no simulator filter. */
+
+/* ── Arctic — cool white, cool grey, a whisper of blue-grey ─────────────── */
+:root[data-cth-palette='arctic'] {
+  --cth-cream-50:  #FFFFFF;
+  --cth-cream-100: #F5F6F8;
+  --cth-cream-200: #ECEEF1;
+  --cth-cream-300: #DDE1E6;
+  --cth-paper-100: #FFFFFF;
+  --cth-paper-200: #F4F5F7;
+
+  --cth-ink-900: #1B1D21;
+  --cth-ink-700: #41454D;
+  --cth-ink-500: #676C76;
+  --cth-ink-300: #979DA7;
+  --cth-ink-100: #E1E4E9;
+
+  --cth-lemon: #C9A84A;      --cth-lemon-light: #F1ECDC;
+  --cth-sky:   #4E7F98;      --cth-sky-light:   #DCE7EE;
+  --cth-lilac: #8391C9;      --cth-lilac-light: #E2E6F4;
+
+  --cth-popover-bg:   #FFFFFF;
+  --cth-glass-border: rgba(27, 29, 33, 0.07);
+  --cth-accent:      #3F5E7C;
+  --cth-accent-soft: rgba(78, 109, 140, 0.10);
+  --cth-focus-ring:  0 0 0 3px rgba(78, 109, 140, 0.30);
+  --cth-hover:       rgba(27, 29, 33, 0.04);
+  --cth-pressed:     rgba(27, 29, 33, 0.08);
+  --cth-selection:   rgba(78, 109, 140, 0.18);
+  --cth-shadow-sm: 0 1px 2px rgba(24, 32, 44, 0.05), 0 0 0 0.5px rgba(24, 32, 44, 0.06);
+  --cth-shadow-md: 0 4px 12px rgba(24, 32, 44, 0.06), 0 1px 2px rgba(24, 32, 44, 0.05);
+  --cth-shadow-lg: 0 16px 40px rgba(24, 32, 44, 0.12), 0 2px 6px rgba(24, 32, 44, 0.06);
+}
+
+/* ── Obsidian — near-black greyscale glass; the floor goes monochrome ───── */
+:root[data-cth-palette='obsidian'] {
+  --cth-cream-50:  #0B0B0C;
+  --cth-cream-100: #111113;
+  --cth-cream-200: #19191C;
+  --cth-cream-300: #252529;
+  --cth-paper-100: #0E0E10;
+  --cth-paper-200: #161618;
+
+  /* Text/border ramp re-measured against the darker ground: body >= 4.5,
+     structural 1px borders (ink-300) >= 3.0 on every surface above. */
+  --cth-ink-900: #E4E4E6;
+  --cth-ink-700: #B2B2B6;
+  --cth-ink-500: #8D8D93;
+  --cth-ink-300: #717178;
+  --cth-ink-100: #2A2A2F;
+
+  /* Colour is information here, not decoration: desaturated so status and
+     agent identity still read, but nothing glows. */
+  --cth-coral: #C98D88;   --cth-coral-light: #2A2020;
+  --cth-mint:  #8DB39C;   --cth-mint-light:  #1C2520;
+  --cth-sky:   #8FAAB2;   --cth-sky-light:   #1C2326;
+  --cth-lemon: #BFB08A;   --cth-lemon-light: #26241D;
+  --cth-lilac: #A7A0C4;   --cth-lilac-light: #221F2A;
+  --cth-peach: #C4A38F;   --cth-peach-light: #28221E;
+
+  --cth-popover-bg:   #1D1D20;
+  --cth-glass-border: rgba(255, 255, 255, 0.07);
+  --cth-accent:      #E4E4E6;
+  --cth-accent-soft: rgba(255, 255, 255, 0.08);
+  --cth-focus-ring:  0 0 0 3px rgba(228, 228, 230, 0.28);
+  --cth-selection:   rgba(228, 228, 230, 0.18);
+
+  --cth-sim-filter: grayscale(1) brightness(0.8) contrast(1.12);
+}
+
+/* ── Ember — graphite with a restrained orange ──────────────────────────── */
+:root[data-cth-palette='ember'] {
+  --cth-cream-50:  #0F0D0C;
+  --cth-cream-100: #151312;
+  --cth-cream-200: #1E1B19;
+  --cth-cream-300: #2B2724;
+  --cth-paper-100: #121010;
+  --cth-paper-200: #1A1716;
+
+  --cth-ink-900: #EDE6DF;
+  --cth-ink-700: #BDB3AA;
+  --cth-ink-500: #968B82;
+  --cth-ink-300: #7C7166;
+  --cth-ink-100: #2F2A26;
+
+  /* lemon is the app's "selected / toggled on" fill; it becomes the orange. */
+  --cth-lemon: #FF8A2B;   --cth-lemon-light: #3A2413;
+  --cth-peach: #F0A06A;   --cth-peach-light: #36251B;
+
+  --cth-popover-bg:   #231F1C;
+  --cth-glass-border: rgba(255, 176, 110, 0.08);
+  --cth-accent:      #FF8A2B;
+  --cth-accent-soft: rgba(255, 138, 43, 0.12);
+  --cth-focus-ring:  0 0 0 3px rgba(255, 138, 43, 0.35);
+  --cth-selection:   rgba(255, 138, 43, 0.24);
+
+  /* A barely-there warm dusk over the floor; hue untouched. */
+  --cth-sim-filter: brightness(0.92) sepia(0.12) saturate(1.05);
+}
+
+/* ── Violet — deep violet ground, magenta accent ────────────────────────── */
+:root[data-cth-palette='violet'] {
+  --cth-cream-50:  #0E0B12;
+  --cth-cream-100: #14101A;
+  --cth-cream-200: #1D1825;
+  --cth-cream-300: #2A2233;
+  --cth-paper-100: #110E16;
+  --cth-paper-200: #19141F;
+
+  --cth-ink-900: #EDE7F3;
+  --cth-ink-700: #BDB2CA;
+  --cth-ink-500: #968BA5;
+  --cth-ink-300: #776C88;
+  --cth-ink-100: #2D2538;
+
+  --cth-lemon: #D05FE0;   --cth-lemon-light: #34193B;
+  --cth-lilac: #B48AF2;   --cth-lilac-light: #2A2140;
+
+  --cth-popover-bg:   #221B2B;
+  --cth-glass-border: rgba(208, 95, 224, 0.10);
+  --cth-accent:      #D05FE0;
+  --cth-accent-soft: rgba(208, 95, 224, 0.13);
+  --cth-focus-ring:  0 0 0 3px rgba(208, 95, 224, 0.35);
+  --cth-selection:   rgba(180, 138, 242, 0.26);
+
+  --cth-sim-filter: brightness(0.94) saturate(0.96);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   v0.5.1 — "Glass studio" language
+   ════════════════════════════════════════════════════════════════════════════
+   Smoky translucent panels floating over a soft ambient backdrop, pill
+   navigation with a filled active pill, outlined pill buttons, large radii.
+   Applies to every palette; `smoke` is the palette that matches the reference
+   colours exactly.
+
+   HOW GLASS WORKS. A `.cth-glass` container (global.css) paints the material
+   and RE-POINTS the surface tokens for everything inside it:
+     cream-100            → transparent   (base panel fills dissolve into glass)
+     cream-200/300, paper-200 → faint overlays
+     cream-50             → OPAQUE        (menus, popovers, dialogs stay solid)
+     paper-100            → OPAQUE well   (inputs, terminal — matches xterm bg)
+   so no component inside needs editing and nothing floating goes see-through.
+
+   WHY NO BACKDROP BLUR ON BIG SURFACES. The ambient backdrop is already a soft,
+   static gradient, so blurring it again is visually a near no-op — but a
+   backdrop-filter on the sidebar or the floor frame would be re-evaluated every
+   time the live terminal or the Pixi canvas inside repaints. Large glass is a
+   translucent fill + a light edge. Popovers and tooltips are OPAQUE raised
+   surfaces (--cth-popover-bg), not blurred glass: Chromium's software
+   compositor (Electron's fallback on Linux when the GPU is blocklisted) paints
+   backdrop-filtered elements as invisible, and the menu must always render. */
+:root {
+  --cth-ambient:
+    radial-gradient(60% 70% at 12% 20%, #F6E6C8 0%, transparent 70%),
+    radial-gradient(50% 60% at 88% 30%, #F3EDE0 0%, transparent 70%),
+    radial-gradient(70% 60% at 60% 100%, #EDDDBF 0%, transparent 70%),
+    #FBF4E4;
+  --cth-glass-fill:  rgba(255, 252, 244, 0.66);
+  --cth-glass-edge:  rgba(255, 255, 255, 0.90);
+  --cth-glass-border: rgba(26, 19, 32, 0.07);
+  --cth-pill-track:  rgba(26, 19, 32, 0.05);
+  --cth-pill-active-bg: #1A1320;
+  --cth-pill-active-fg: #FFFDF5;
+  /* The selected agent card. Defaults to the pill colours; the neon palettes
+     override it so a whole card never floods with accent. */
+  --cth-card-active-bg: var(--cth-pill-active-bg);
+  --cth-card-active-fg: var(--cth-pill-active-fg);
+  --cth-scope-o1:    rgba(26, 19, 32, 0.035);
+  --cth-scope-o2:    rgba(26, 19, 32, 0.07);
+  --cth-scope-solid: #FFFDF5;
+  --cth-scope-well:  #FCFAF0;   /* = Original xterm background */
+}
+:root[data-cth-palette='arctic'] {
+  --cth-ambient:
+    radial-gradient(55% 65% at 15% 15%, #E4ECF4 0%, transparent 70%),
+    radial-gradient(50% 60% at 90% 35%, #F1F3F7 0%, transparent 70%),
+    radial-gradient(70% 60% at 50% 100%, #E6EAF0 0%, transparent 70%),
+    #F6F7F9;
+  --cth-glass-fill:  rgba(255, 255, 255, 0.68);
+  --cth-glass-edge:  rgba(255, 255, 255, 0.95);
+  --cth-glass-border: rgba(27, 29, 33, 0.07);
+  --cth-pill-track:  rgba(27, 29, 33, 0.05);
+  --cth-pill-active-bg: #1B1D21;
+  --cth-pill-active-fg: #FFFFFF;
+  --cth-scope-o1:    rgba(27, 29, 33, 0.035);
+  --cth-scope-o2:    rgba(27, 29, 33, 0.07);
+  --cth-scope-solid: #FFFFFF;
+  --cth-scope-well:  #FFFFFF;
+}
+:root[data-cth-palette='obsidian'] {
+  --cth-ambient:
+    radial-gradient(55% 60% at 15% 20%, #1E1E22 0%, transparent 70%),
+    radial-gradient(45% 55% at 90% 30%, #26262A 0%, transparent 70%),
+    radial-gradient(70% 60% at 55% 105%, #18181B 0%, transparent 70%),
+    #09090A;
+  --cth-glass-fill:  rgba(30, 30, 33, 0.60);
+  --cth-glass-edge:  rgba(255, 255, 255, 0.09);
+  --cth-pill-track:  rgba(255, 255, 255, 0.06);
+  --cth-pill-active-bg: #E4E4E6;
+  --cth-pill-active-fg: #0B0B0C;
+  --cth-scope-o1:    rgba(255, 255, 255, 0.04);
+  --cth-scope-o2:    rgba(255, 255, 255, 0.08);
+  --cth-scope-solid: #18181B;
+  --cth-scope-well:  #0E0E10;
+}
+:root[data-cth-palette='ember'] {
+  --cth-ambient:
+    radial-gradient(50% 55% at 10% 85%, rgba(255, 120, 30, 0.16) 0%, transparent 70%),
+    radial-gradient(50% 60% at 85% 20%, #26201C 0%, transparent 70%),
+    radial-gradient(60% 60% at 40% 10%, #1D1916 0%, transparent 70%),
+    #0D0B0A;
+  --cth-glass-fill:  rgba(46, 40, 36, 0.50);
+  --cth-glass-edge:  rgba(255, 200, 150, 0.09);
+  --cth-pill-track:  rgba(255, 255, 255, 0.05);
+  --cth-pill-active-bg: #FF8A2B;
+  --cth-pill-active-fg: #1A0F07;
+  --cth-card-active-bg: #EDE6DF;
+  --cth-card-active-fg: #1E1A18;
+  --cth-scope-o1:    rgba(255, 255, 255, 0.04);
+  --cth-scope-o2:    rgba(255, 255, 255, 0.08);
+  --cth-scope-solid: #1E1A18;
+  --cth-scope-well:  #121010;
+}
+:root[data-cth-palette='violet'] {
+  --cth-ambient:
+    radial-gradient(50% 55% at 88% 80%, rgba(208, 95, 224, 0.16) 0%, transparent 70%),
+    radial-gradient(55% 60% at 12% 20%, #231B2E 0%, transparent 70%),
+    radial-gradient(60% 60% at 50% 0%, #1A1422 0%, transparent 70%),
+    #0B0910;
+  --cth-glass-fill:  rgba(44, 34, 56, 0.50);
+  --cth-glass-edge:  rgba(230, 190, 255, 0.09);
+  --cth-pill-track:  rgba(255, 255, 255, 0.05);
+  --cth-pill-active-bg: #D05FE0;
+  --cth-pill-active-fg: #16081A;
+  --cth-card-active-bg: #EDE7F3;
+  --cth-card-active-fg: #1C1624;
+  --cth-scope-o1:    rgba(255, 255, 255, 0.04);
+  --cth-scope-o2:    rgba(255, 255, 255, 0.08);
+  --cth-scope-solid: #1C1624;
+  --cth-scope-well:  #110E16;
+}
+
+/* ── Smoke — the reference look: warm smoke glass, ivory pills ──────────── */
+:root[data-cth-palette='smoke'] {
+  --cth-cream-50:  #3A3632;
+  --cth-cream-100: #332F2B;
+  --cth-cream-200: #3D3934;
+  --cth-cream-300: #4A4540;
+  --cth-paper-100: #2A2724;
+  --cth-paper-200: #34302C;
+  --cth-ink-900: #F4F1EA;
+  --cth-ink-700: #DCD7CE;   /* inactive tab labels clear 4.5:1 on the pill track */
+  --cth-ink-500: #B5AFA4;   /* >= 4.5:1 on the densest-lit glass (measured) */
+  --cth-ink-300: #979188;   /* >= 3.0:1 — control borders must stay findable */
+  --cth-ink-100: #4A4540;
+  /* "Selected / on" fills become ivory, like the reference's active pills. */
+  --cth-lemon: #EFEAD8;   --cth-lemon-light: #45403A;
+  --cth-ambient:
+    radial-gradient(45% 70% at 6% 45%, #6B523D 0%, transparent 70%),
+    radial-gradient(40% 65% at 94% 32%, #8F887D 0%, transparent 72%),
+    radial-gradient(60% 55% at 55% 108%, #3C332C 0%, transparent 70%),
+    radial-gradient(50% 45% at 50% -5%, #4D453D 0%, transparent 70%),
+    #2F2A26;
+  /* Denser than the reference's glass on purpose: over the light side of the
+     backdrop the reference's fill leaves ivory text at ~3.6:1. */
+  --cth-glass-fill:   rgba(58, 54, 50, 0.78);
+  --cth-glass-edge:   rgba(255, 255, 255, 0.18);
+  --cth-glass-border: rgba(255, 255, 255, 0.09);
+  --cth-popover-bg:   #433F3B;
+  --cth-pill-track:   rgba(255, 255, 255, 0.08);
+  --cth-pill-active-bg: #EFEAD8;
+  --cth-pill-active-fg: #26221E;
+  --cth-scope-o1:    rgba(255, 255, 255, 0.05);
+  --cth-scope-o2:    rgba(255, 255, 255, 0.10);
+  --cth-scope-solid: #3A3632;
+  --cth-scope-well:  #2A2724;
+  --cth-accent:      #EFEAD8;
+  --cth-accent-soft: rgba(239, 234, 216, 0.12);
+  --cth-focus-ring:  0 0 0 3px rgba(239, 234, 216, 0.35);
+  --cth-hover:       rgba(255, 255, 255, 0.07);
+  --cth-pressed:     rgba(255, 255, 255, 0.12);
+  --cth-selection:   rgba(239, 234, 216, 0.22);
+  --cth-scrim:       rgba(20, 17, 15, 0.45);
+  /* A faint warmth over the floor, matching the room; hue untouched. */
+  --cth-sim-filter:  brightness(0.95) sepia(0.06);
+}
+
+/* Accessibility: solid surfaces when the OS asks for less transparency or more
+   contrast — hierarchy then comes from surface steps + borders, not glass. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root[data-cth-palette] {
+    --cth-glass-fill: var(--cth-cream-100);
+    --cth-ambient: var(--cth-cream-50);
+  }
+}
+@media (prefers-contrast: more) {
+  :root[data-cth-palette] { --cth-glass-border: var(--cth-ink-500); --cth-glass-edge: transparent; }
 }

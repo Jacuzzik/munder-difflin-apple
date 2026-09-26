@@ -274,7 +274,7 @@ function TaskCard({ task, accent, assigneeName, onOpen, onDismiss }: {
           <span title={t('kanban.needsYouTitle')} style={{
             alignSelf: 'center', marginRight: 18, flexShrink: 0,
             fontFamily: 'var(--cth-font-display)', fontSize: 10, padding: '2px 5px 1px',
-            background: 'var(--cth-lilac)', color: 'var(--cth-ink-900)',
+            background: 'var(--cth-lilac)', color: 'var(--cth-on-accent)',
             boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)'
           }}>?</span>
         )}
@@ -328,7 +328,7 @@ export function TaskDetail({ task, all, assigneeName, onMove, onAssign, onClose 
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 280,
-        background: 'rgba(26, 19, 32, 0.6)',
+        background: 'var(--cth-scrim)', animation: 'cth-fade-in 160ms var(--cth-ease)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24
       }}
     >

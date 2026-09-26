@@ -80,7 +80,10 @@ export function AgentCard({
   // an accent so the cue is identical on every agent, and it flips with the
   // theme (near-black on cream, near-white on the dark ground), staying legible
   // over whatever accent the card already carries.
-  const selectionRing = selected ? '0 0 0 2px var(--cth-ink-900)' : '';
+  // Selection = the palette's chrome accent (ink in Original, as before).
+  // v0.5.1: selection is the solid pill-colour card (.cth-card-selected in
+  // global.css); unselected tiles get the glass edge.
+  const selectionRing = selected ? '' : 'inset 0 1px 0 var(--cth-glass-edge), 0 0 0 1px var(--cth-glass-border)';
 
   // Context gauge as ONE clean fill (0..8 → 0..100%). Colour escalates as the
   // window fills: accent while comfortable, amber from 6/8, coral from 7/8.
@@ -111,18 +114,21 @@ export function AgentCard({
    *  treatment that only exists on one side always looks like a mistake or a
    *  progress bar. Same 1px geometry as every other card, so the box is
    *  unchanged and the selection ring still means exactly one thing everywhere. */
-  const godSurface: React.CSSProperties = isGod
+  // v0.5.1: while SELECTED the card is the solid pill-colour fill, and the god
+  // tint on top of it would sit dark-on-dark; the BOSS badge still marks god.
+  const godSurface: React.CSSProperties = isGod && !selected
     ? {
         background: `var(--cth-${accent}-light)`,
         boxShadow: `inset 0 0 0 1px var(--cth-${accent})`
       }
     : {};
+  // v0.5: soft elevation instead of the hard offset shadow. God rides one
+  // step higher; hover lifts any card one step.
   const dropShadow = isGod
-    ? `2px 3px 0 0 rgba(26,19,32,${hover ? 0.2 : 0.14})`
-    : (hover ? '1px 2px 0 0 rgba(26,19,32,0.12)' : 'none');
+    ? (hover ? 'var(--cth-shadow-lg)' : 'var(--cth-shadow-md)')
+    : (hover ? 'var(--cth-shadow-md)' : 'var(--cth-shadow-sm)');
   // Ring first so it sits tight to the card, then the existing drop shadow.
-  const outerShadow = [selectionRing, dropShadow === 'none' ? '' : dropShadow]
-    .filter(Boolean).join(', ') || 'none';
+  const outerShadow = [selectionRing, dropShadow].filter(Boolean).join(', ');
 
   // One context line: what it's DOING while working, WHERE it lives while idle.
   const infoLine = (status !== 'idle' && action) ? action : project;
@@ -146,14 +152,15 @@ export function AgentCard({
       // The ring is the visual answer to "which terminal is open"; this is the
       // same answer for a screen reader. Matches SidebarRow in fullscreen.
       aria-current={selected ? 'true' : undefined}
-      className="cth-titlebar-nodrag"
+      className={`cth-titlebar-nodrag cth-glass-card${selected ? ' cth-card-selected' : ''}`}
       style={{
         width, minWidth: width, height,
-        padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left',
+        padding: 0, border: 'none', cursor: 'pointer', textAlign: 'left',
         position: 'relative',
+        borderRadius: 'var(--cth-radius-lg)',
         transform: lift ? `translateY(${lift}px)` : 'none',
         boxShadow: outerShadow,
-        transition: 'transform 90ms steps(2, end), box-shadow 90ms steps(2, end)'
+        transition: 'transform var(--cth-dur-fast) var(--cth-ease-out), box-shadow var(--cth-dur-med) var(--cth-ease)'
       }}
     >
       {/* The taken note, stuck to the card like on the desk: this worker is
@@ -168,7 +175,8 @@ export function AgentCard({
             position: 'absolute', right: -4, bottom: -5, zIndex: 2,
             width: 20, height: 18,
             background: 'var(--cth-sky)',
-            boxShadow: 'inset 0 0 0 1px var(--cth-ink-300), 1px 2px 0 rgba(26,19,32,0.18)',
+            boxShadow: 'inset 0 0 0 1px var(--cth-ink-300), var(--cth-shadow-sm)',
+            borderRadius: 'var(--cth-radius-xs)',
             transform: 'rotate(4deg)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: 'var(--cth-font-display)', fontSize: 8, color: 'var(--cth-ink-900)',
@@ -192,6 +200,7 @@ export function AgentCard({
             // against the tint, which is what the tile is meant to look like.
             background: isGod ? 'var(--cth-paper-100)' : `var(--cth-${accent}-light)`,
             boxShadow: `inset 0 0 0 1px var(--cth-ink-${isGod ? '300' : '100'})`,
+            borderRadius: 'var(--cth-radius-sm)',
             // Anchor the sprite's TOP: the 56px-tall portrait overflows this
             // tile, and bottom-anchoring cropped the head — crop feet, not face.
             display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflow: 'hidden',
@@ -219,7 +228,7 @@ export function AgentCard({
                 {isGod && (
                   <span style={{
                     fontFamily: 'var(--cth-font-display)', fontSize: 7, lineHeight: '11px',
-                    background: `var(--cth-${accent})`, color: 'var(--cth-ink-900)',
+                    background: `var(--cth-${accent})`, color: 'var(--cth-on-accent)',
                     padding: '1px 4px 0', flexShrink: 0
                   }}>{t('agentCard.boss')}</span>                )}
               </span>

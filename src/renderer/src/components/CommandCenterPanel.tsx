@@ -258,30 +258,27 @@ export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent
         flexWrap: fullscreen ? 'nowrap' : 'wrap',
         overflowX: fullscreen ? 'auto' : 'visible',
         padding: '6px 8px', background: 'var(--cth-cream-100)',
-        borderBottom: '1px solid var(--cth-ink-700)', flexShrink: 0
-      }}>
+        borderBottom: '1px solid var(--cth-ink-100)', flexShrink: 0
+      }} role="tablist">
         {visibleTabs.map((tabDef) => (
           <button
             key={tabDef.key}
             onClick={() => setTab(tabDef.key)}
+            role="tab"
+            aria-selected={tab === tabDef.key}
+            className="cth-seg-tab"
             style={{
+              // v0.5: segmented tabs. The agent's accent still marks the active
+              // tab, as a tint + ring instead of a solid slab (see global.css).
+              ['--tab-accent' as string]: `var(--cth-${agent.accent})`,
               whiteSpace: 'nowrap',
               // grow to share any spare width (so the strip still spans the panel
               // exactly as the old grid did), never shrink below the label (a
               // squashed tab is unreadable — overflow into the scroll instead).
               flex: '1 0 auto',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-              padding: '4px 8px 3px', border: 'none', cursor: 'pointer',
-              background: tab === tabDef.key ? `var(--cth-${agent.accent})` : 'var(--cth-cream-200)',
-              // The selected tab is filled with the agent's accent, which is a
-              // LIGHT colour in both themes. ink-900 flips to near-white in dark
-              // mode, so the active tab's label was pale-on-pale — the one tab
-              // you most need to read. On-accent text is dark in both themes.
-              color: tab === tabDef.key ? 'var(--cth-on-accent)' : 'var(--cth-ink-900)',
-              boxShadow: tab === tabDef.key
-                ? 'inset 0 0 0 1px var(--cth-ink-300)'
-                : 'inset 0 0 0 1px var(--cth-ink-100)',
-              fontFamily: 'var(--cth-font-ui)', fontSize: 13
+              padding: '4px 10px', height: 28, border: 'none', cursor: 'pointer',
+              fontFamily: 'var(--cth-font-ui)', fontSize: 12.5
             }}
           >
             <Icon name={tabDef.icon} /> {t(tabDef.labelKey)}
@@ -1243,7 +1240,7 @@ function TokenLimitEditor({ value, onSet }: { value?: number; onSet: (tokens: nu
       />
       <button
         onMouseDown={(e) => e.preventDefault()} onClick={commit} title={t('commandCenter.saveLimit')}
-        style={{ flexShrink: 0, padding: '1px 5px', border: 'none', cursor: 'pointer', background: 'var(--cth-mint)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)', fontSize: 11, color: 'var(--cth-ink-900)' }}
+        style={{ flexShrink: 0, padding: '1px 5px', border: 'none', cursor: 'pointer', background: 'var(--cth-mint)', boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)', fontSize: 11, color: 'var(--cth-on-accent)' }}
       >✓</button>
     </span>
   );

@@ -18,8 +18,9 @@ import { useStore, type Agent } from '@/store/store';
 import { usePtyParser } from '@/hooks/usePtyParser';
 import { useRestoreTeam } from '@/hooks/useRestoreTeam';
 import { useTerminalFontSize } from './terminalFontSize';
-import { useHasTerminalDraft, disposeTerminal, reflowTerminal, notifyThemeChangeAll } from './terminalPool';
-import { useAppTheme, toggleAppTheme } from '@/design/theme';
+import { useHasTerminalDraft, disposeTerminal, reflowTerminal } from './terminalPool';
+import { useAppTheme } from '@/design/theme';
+import { toggleModeEverywhere } from '@/design/themeActions';
 import type { HarnessConfig } from '@/store/config';
 import { useRtl } from '@/i18n/useDirection';
 
@@ -287,7 +288,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'var(--cth-cream-100)',
+      background: 'var(--cth-ambient)',
       zIndex: 250,
       display: 'flex',
       flexDirection: 'column',
@@ -298,8 +299,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
         className="cth-titlebar-drag"
         style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: 36,
-          background: 'linear-gradient(180deg, var(--cth-cream-100) 0%, var(--cth-cream-200) 100%)',
-          borderBottom: '1px solid var(--cth-ink-300)',
+          // v0.5.1: no bar — the title and controls float on the backdrop.
           display: 'flex', alignItems: 'center',
           paddingLeft: 96, paddingRight: 12, gap: 12,
           userSelect: 'none'
@@ -311,44 +311,28 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
         }}>MUNDER DIFFLIN · FOCUS MODE</span>
         {/* Same top-right controls as the main title bar — fullscreen covers
             it, so theme / exit-fullscreen / IDE must live here too. */}
-        <div className="cth-titlebar-nodrag" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* v0.5.1: the same round glass controls as the main top bar
+            (.cth-topbar-btn); behaviour and labels unchanged. */}
+        <div className="cth-titlebar-nodrag" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
+            className="cth-topbar-btn"
             onClick={toggleRoster}
             title={rosterCollapsed ? t('fullscreenTerminal.showAgentList') : t('fullscreenTerminal.hideAgentList')}
             aria-label={rosterCollapsed ? t('fullscreenTerminal.showAgentList') : t('fullscreenTerminal.hideAgentList')}
             aria-pressed={rosterCollapsed}
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, padding: 0,
-              // Pressed-in when collapsed, so the rail's absence reads as a state
-              // this button is holding rather than something that broke.
-              background: rosterCollapsed ? 'var(--cth-lemon)' : 'var(--cth-paper-100)',
-              boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-              border: 'none', borderRadius: 2, cursor: 'pointer',
-              color: rosterCollapsed ? 'var(--cth-ink-900)' : 'var(--cth-ink-900)'
-            }}
           >
             <Icon name="sidebar" size={1} style={{ width: 16, height: 16 }} />
           </button>
           <button
+            className="cth-topbar-btn"
             onClick={() => {
-              const next = toggleAppTheme();
-              void window.cth.updateConfig({ terminalTheme: next });
-              // Focus mode has its OWN theme button, so notifying only from the
-              // title-bar toggle meant a flip made from in here never reached a
-              // running TUI. Both entry points must tell them.
-              notifyThemeChangeAll(next === 'dark' ? 'dark' : 'light');
+              // Focus mode has its OWN quick light/dark flip. It goes through the
+              // same fan-out as the top-bar picker (DEC 2031 notify + config
+              // mirror), so a flip from in here still reaches every running TUI.
+              toggleModeEverywhere();
             }}
             title={appThemeNow === 'dark' ? t('fullscreenTerminal.lightTheme') : t('fullscreenTerminal.darkTheme')}
             aria-label={t('fullscreenTerminal.toggleTheme')}
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, padding: 0,
-              background: 'var(--cth-paper-100)',
-              boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-              border: 'none', borderRadius: 2, cursor: 'pointer',
-              color: 'var(--cth-ink-900)', fontSize: 13, lineHeight: 1
-            }}
           >
             {appThemeNow === 'dark' ? '☀' : '☾'}
           </button>
@@ -357,18 +341,10 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
               App's existing `cth:open-settings` event rather than a new store
               action, because this overlay is not a child of App. */}
           <button
-            className="cth-settings-btn"
+            className="cth-topbar-btn"
             onClick={() => window.dispatchEvent(new CustomEvent('cth:open-settings'))}
             title="Settings"
             aria-label="Settings"
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, padding: 0,
-              background: 'var(--cth-paper-100)',
-              boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-              border: 'none', borderRadius: 2, cursor: 'pointer',
-              color: 'var(--cth-ink-900)'
-            }}
           >
             <svg
               width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -380,17 +356,10 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
             </svg>
           </button>
           <button
+            className="cth-topbar-btn"
             onClick={() => setFullscreen(null)}
             title={t('fullscreenTerminal.exitFullscreen')}
             aria-label={t('fullscreenTerminal.exitFullscreen')}
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 28, height: 28, padding: 0,
-              background: 'var(--cth-paper-100)',
-              boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-              border: 'none', borderRadius: 2, cursor: 'pointer',
-              color: 'var(--cth-ink-900)'
-            }}
           >
             <Icon name="minimize" size={1} style={{ width: 16, height: 16 }} />
           </button>
@@ -863,7 +832,7 @@ function SidebarRow({
             zIndex: 450,
             padding: 8,
             background: 'var(--cth-paper-100)',
-            boxShadow: 'inset 0 0 0 1.5px var(--cth-ink-500), 4px 4px 0 rgba(26,19,32,0.25)',
+            boxShadow: 'inset 0 0 0 1.5px var(--cth-ink-500), var(--cth-shadow-lg)',
             boxSizing: 'border-box'
           }}
         >

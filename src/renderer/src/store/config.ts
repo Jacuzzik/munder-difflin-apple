@@ -146,6 +146,11 @@ export interface HarnessConfig {
    *  (mirrors src/main/config.ts). */
   contextTrigger?: ContextTriggerConfig;
   /** Inbound HTTP endpoints, one per caller — replaces the legacy trio above. */
+  /** Selected chrome palette (design/theme.ts). Renderer-owned: main persists
+   *  it verbatim through writeConfig's merge and never reads it. localStorage
+   *  gives the first paint; this durable copy survives a quit that lands inside
+   *  Chromium's localStorage commit window (every quit ends in app.exit()). */
+  appPalette?: string;
   webhookTriggers?: WebhookTrigger[];
   /** Peer messaging between teammates' clone nodes (persistence + UI only). */
   orgTrigger?: OrgTriggerConfig;

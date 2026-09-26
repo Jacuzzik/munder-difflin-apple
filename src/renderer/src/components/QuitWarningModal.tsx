@@ -39,7 +39,7 @@ export function QuitWarningModal({ ptyCount, closing, onCancel, onConfirm, onClo
       onClick={inClosingTime ? undefined : onCancel}
       style={{
         position: 'fixed', inset: 0,
-        background: 'rgba(26, 19, 32, 0.7)',
+        background: 'var(--cth-scrim)', animation: 'cth-fade-in 160ms var(--cth-ease)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         // Above EVERY modal, not just most of them. Modals in this app sit at
         // 500 (add agent, edit agent, the release drop) and overlays below that.

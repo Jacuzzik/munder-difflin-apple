@@ -63,6 +63,7 @@ export function PixelBadge({ status, label, style }: PixelBadgeProps) {
         flexShrink: 0,
         gap: 6,
         padding: '2px 8px 0',
+        borderRadius: 'var(--cth-radius-xs)',
         background: 'var(--cth-cream-100)',
         boxShadow: `inset 0 0 0 1px ${colorByStatus[status]}`,
         fontFamily: 'var(--cth-font-ui)',

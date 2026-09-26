@@ -2,6 +2,39 @@
 
 > The aesthetic is **Animal Crossing × Earthbound × SNES menu UI**. Pixel-snapped, chunky, friendly. Every UI element should feel like it could appear in a Nintendo game from 1995–2005. This document is canonical: any new component must derive from these tokens.
 
+> **v0.5 update — chrome vs. floor.** The *application chrome* (top bar, panels, buttons, tabs, dialogs, terminal frame) now follows an Apple-inspired language: system type stack, moderate radii, soft elevation, restrained translucency on small static chrome only. **The office floor is unchanged** — pixel art, Pixi scene, sprites, and scene logic are out of scope for the chrome redesign. Where the principles below conflict with chrome, section 0 wins; for anything drawn *on the floor*, the principles below still apply.
+
+## 0. Chrome themes (v0.5.1 — glass studio)
+
+**Language.** Translucent "glass" panels float over a soft, static ambient backdrop; navigation is a pill track whose active item is a filled pill; secondary buttons are outlined pills, primary buttons are filled pills; icon controls are round; radii are large (`--cth-radius-lg` 18px, `-xl` 24px). The selected agent card inverts into a solid card. The floor keeps its pixel art — it is framed in glass, never restyled.
+
+Six palettes, one component tree. `design/theme.ts` stamps two attributes on `<html>`:
+
+| Attribute | Values | Drives |
+|---|---|---|
+| `data-cth-theme` | `light` \| `dark` | Base token ramp, xterm ANSI set, DEC 2031 notify, `config.terminalTheme` |
+| `data-cth-palette` | `original` \| `smoke` \| `obsidian` \| `ember` \| `violet` \| `arctic` | Palette overrides in `tokens.css` |
+
+- **Original** (light) — cream/ink identity. No floor filter. The default.
+- **Smoke** (dark) — warm smoke glass, ivory pills and ivory selected card. Faint warm floor filter.
+- **Obsidian** (dark) — near-black greyscale. Floor filter: `grayscale(1) brightness(.8) contrast(1.12)`.
+- **Ember** (dark) — graphite; orange on pills/badges only (selected card stays warm ivory). Faint warm floor filter.
+- **Violet** (dark) — deep violet; magenta on pills/badges only (selected card stays pale). Faint dim floor filter.
+- **Arctic** (light) — cool white/grey, blue-grey accent. No floor filter.
+
+**Glass scopes.** `.cth-glass` (the sidebar) and `.cth-glass-card` (dock cards) paint the material and *re-point* surface tokens for their subtree: `cream-100` → transparent, `cream-200/300` and `paper-200` → faint overlays, `cream-50` → opaque (menus/dialogs), `paper-100` → an opaque well that equals the palette's xterm background. Components inside need no edits. `.cth-card-selected` re-points the ink ramp to `--cth-card-active-fg` on `--cth-card-active-bg`.
+
+**Rules.**
+- Components never read a palette name — only tokens.
+- **No `backdrop-filter`, anywhere.** Big glass is a translucent fill + light edge over a static backdrop (blurring it again adds nothing and would re-run on every terminal/floor repaint). Popovers and tooltips are opaque `--cth-popover-bg`: Chromium's software compositor — Electron's fallback on Linux when the GPU is blocklisted — paints backdrop-filtered elements as invisible.
+- Text on an accent fill (a badge, a lemon/mint/lilac chip) uses `--cth-on-accent`, never `--cth-ink-900` (ink inverts in dark palettes; the accents do not). Accent text on an ink-filled surface uses `--cth-inverse-accent`.
+- Contrast is measured on the rendered glass, not on tokens: enabled text >= 4.5:1, control borders (`ink-300`) >= 3:1, in every palette.
+- The floor is only ever touched through `--cth-sim-filter`, a CSS filter on the canvas *element* (`.cth-sim-surface canvas`): never textures, never scene state, never hit-testing.
+- Palette changes go through `design/themeActions.ts`: running terminals hear only light↔dark crossings; the palette name is persisted on every change, to localStorage (first paint) **and** `config.appPalette` via the existing config IPC (durable — every quit ends in `app.exit()`, which can drop a localStorage write made in the last few seconds). `App.tsx` adopts the config copy at startup.
+- Keep `xterm` palettes in `PtyTerminalView.tsx` in step with each palette's `--cth-scope-well` / `ink-900`.
+- Font stacks must stay identical in `tokens.css` and `tokens.ts` (enforced by `test/bundled-fonts.test.cjs`); the terminal keeps bundled JetBrains Mono first so cell metrics never change.
+- `prefers-reduced-transparency` / `prefers-contrast: more` swap glass for solid surfaces and firmer borders; `prefers-reduced-motion` removes transitions.
+
 ---
 
 ## 1. Principles

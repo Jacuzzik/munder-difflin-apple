@@ -20,13 +20,14 @@ import { QuitWarningModal, type ClosingTimeState } from '@/components/QuitWarnin
 import { CompletionToast } from '@/realtime/CompletionToast';
 import { UpdateToast } from '@/components/UpdateToast';
 import { UpdateBadge } from '@/components/UpdateBadge';
-import { useAppTheme, toggleAppTheme } from '@/design/theme';
+import { ThemePicker } from '@/components/ThemePicker';
+import { adoptPersistedPalette } from '@/design/theme';
 import { SettingsModal, type Section as SettingsSection } from '@/components/SettingsModal';
 import { PixelPanel } from '@/components/PixelPanel';
 import { PixelButton } from '@/components/PixelButton';
 import { Icon } from '@/components/Icon';
 import { SidebarSplitter } from '@/components/SidebarSplitter';
-import { acquireTerminal, notifyThemeChangeAll } from '@/components/terminalPool';
+import { acquireTerminal } from '@/components/terminalPool';
 import { FullscreenTerminal } from '@/components/FullscreenTerminal';
 import { TaskDetailOverlay } from '@/components/TaskDetailOverlay';
 import { IdePanel } from '@/ide/IdePanel';
@@ -52,7 +53,6 @@ export function App() {
   const clearPendingHires = useStore(s => s.clearPendingHires);
   const godStatus = useStore(s => s.godStatus);
   const fullscreenAgentId = useStore(s => s.fullscreenAgentId);
-  const appThemeNow = useAppTheme();
   const sidebarWidth = useStore(s => s.sidebarWidth);
   const setSidebarWidth = useStore(s => s.setSidebarWidth);
   const ideOpen = useStore(s => s.ideOpen);
@@ -121,6 +121,9 @@ export function App() {
       const withTriggers = c as HarnessConfig;
       useStore.getState().setWebhookTriggers(withTriggers.webhookTriggers ?? []);
       useStore.getState().setOrgTrigger(withTriggers.orgTrigger ?? DEFAULT_ORG_TRIGGER);
+      // The config holds the durable copy of the chrome palette; localStorage only
+      // painted the first frame. Adopt it if a quit lost the localStorage write.
+      adoptPersistedPalette(withTriggers.appPalette);
     });
     // Mirror BYOK OpenAI key presence (boolean only; the key never leaves main) so the
     // Realtime Michael voice toggle can gate on it. Lives in the secret broker, not
@@ -282,16 +285,16 @@ export function App() {
       <UpdateToast />
       {/* Title bar */}
       <div
-        className="cth-titlebar-drag"
+        className="cth-titlebar-drag cth-topbar"
         style={{
-          height: 36, minHeight: 36,
-          background: 'linear-gradient(180deg, var(--cth-cream-100) 0%, var(--cth-cream-200) 100%)',
-          borderBottom: '1px solid var(--cth-ink-300)',
+          height: 58, minHeight: 58,
           display: 'flex',
           alignItems: 'center',
-          paddingLeft: 96,
-          paddingRight: 12,
-          gap: 12,
+          // Room for the macOS traffic lights (hiddenInset). Other platforms draw
+          // their own frame outside the page, so the gutter was dead space there.
+          paddingLeft: window.cth.platform === 'darwin' ? 88 : 14,
+          paddingRight: 10,
+          gap: 10,
           userSelect: 'none'
         }}
       >
@@ -303,62 +306,29 @@ export function App() {
         {/* v0.3.7: the version is no longer inert text — it doubles as the
             update control (check / download / restart to update). */}
         <UpdateBadge />
-        <span style={{
-          fontFamily: 'var(--cth-font-ui)',
-          fontSize: 13,
-          color: 'var(--cth-ink-500)'
-        }}>
-          {config.autoMode ? 'auto mode on' : 'auto mode off'}
-        </span>
-        {/* v0.3.4: theme + fullscreen live HERE (top right), not buried in the
-            terminal header — and the theme darkens the whole app, terminals
-            included (design/theme.ts + tokens.css dark block). */}
-        <button
-          className="cth-titlebar-nodrag cth-tip"
-          onClick={() => {
-            const next = toggleAppTheme();
-            // Tell every RUNNING program the theme flipped. xterm repaints its own
-            // cells, but a TUI that painted its panels with explicit colours keeps
-            // them until it redraws, which left OpenCode's boxes in the old palette
-            // until the agent restarted. Only programs that enabled DEC mode 2031
-            // are told, and it is every pooled terminal rather than the visible one,
-            // so a background agent is not stale when you switch to it.
-            notifyThemeChangeAll(next === 'dark' ? 'dark' : 'light');
-            // Mirror into the harness config: every agent (re)spawned from now
-            // on gets the matching `theme` in its per-session Claude settings,
-            // so the TUI's truecolor palette fits the terminal. Scoped to
-            // harness agents — the user's global Claude theme is never touched.
-            void window.cth.updateConfig({ terminalTheme: next });
-          }}
-          data-tip={appThemeNow === 'dark' ? 'Light theme' : 'Dark theme'}
-          aria-label="Toggle dark mode"
-          style={{
-            marginLeft: 'auto',
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28, padding: 0,
-            background: 'var(--cth-paper-100)',
-            boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-            border: 'none', borderRadius: 2, cursor: 'pointer',
-            color: 'var(--cth-ink-900)', fontSize: 13, lineHeight: 1
-          }}
+        <span
+          className="cth-status-pill"
+          role="status"
+          aria-label={config.autoMode ? 'Auto mode on' : 'Auto mode off'}
         >
-          {appThemeNow === 'dark' ? '☀' : '☾'}
-        </button>
+          {/* State is carried by the words; the dot is a secondary cue. */}
+          <span className="cth-status-dot" aria-hidden="true" style={{
+            background: config.autoMode ? 'var(--cth-status-success)' : 'var(--cth-ink-300)'
+          }} />
+          {config.autoMode ? 'Auto mode on' : 'Auto mode off'}
+        </span>
+        {/* v0.5: the light/dark toggle became a five-palette picker. Same slot
+            (top right), same side effects on a mode change — see
+            design/themeActions.ts. */}
+        <div style={{ marginLeft: 'auto' }} />
+        <ThemePicker />
         {/* v0.3.4: the IDE button moved to agent level — every agent's header
             (sidebar detail, god Command Center, fullscreen) carries it. */}
         <button
-          className="cth-titlebar-nodrag cth-settings-btn cth-tip"
+          className="cth-titlebar-nodrag cth-topbar-btn cth-tip"
           onClick={() => { setSettingsSection(undefined); setSettingsOpen(true); }}
           data-tip="Settings"
           aria-label="Settings"
-          style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28, padding: 0,
-            background: 'var(--cth-paper-100)',
-            boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-            border: 'none', borderRadius: 2, cursor: 'pointer',
-            color: 'var(--cth-ink-900)'
-          }}
         >
           <GearGlyph />
         </button>
@@ -367,7 +337,7 @@ export function App() {
             is drawn in — at 16-18px a pixel-grid glyph reads as a rendering
             artifact next to the OS window controls, not as a style choice. */}
         <button
-          className="cth-titlebar-nodrag cth-tip"
+          className="cth-titlebar-nodrag cth-topbar-btn cth-tip"
           onClick={() => {
             if (fullscreenAgentId) { useStore.getState().setFullscreen(null); return; }
             const all = useStore.getState().agents;
@@ -378,28 +348,26 @@ export function App() {
           }}
           data-tip={fullscreenAgentId ? 'Exit focus mode (Esc)' : 'Focus mode'}
           aria-label="Toggle focus mode"
-          style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28, padding: 0,
-            background: 'var(--cth-paper-100)',
-            boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-            border: 'none', borderRadius: 2, cursor: 'pointer',
-            color: 'var(--cth-ink-900)'
-          }}
+          aria-pressed={!!fullscreenAgentId}
         >
           {fullscreenAgentId ? <CollapseGlyph /> : <ExpandGlyph />}
         </button>
 
       </div>
 
-      <div style={{
+      <div className="cth-workspace" style={{
         flex: 1, minHeight: 0,
         display: 'flex',
         padding: 16,
         gap: 0
       }}>
         <div style={{ flex: 1, minHeight: 0, minWidth: 0, position: 'relative' }}>
-          <OfficeFloor />
+          {/* The floor is framed, never restyled: this wrapper rounds the frame
+              and carries the palette's --cth-sim-filter onto the Pixi canvas
+              element (global.css). OfficeFloor itself is untouched. */}
+          <div className="cth-sim-surface">
+            <OfficeFloor />
+          </div>
           <MemoryPanel />
           {agentCount === 0 && godStatus === 'booting' && <MichaelBooting />}
           {agentCount === 0 && godStatus !== 'booting' && (
@@ -432,7 +400,9 @@ export function App() {
           viewportWidth={vpWidth}
         />
 
-        <div style={{
+        {/* v0.5.1: the sidebar is a glass panel (.cth-glass in global.css). Its
+            contents are unchanged; they restyle through the scoped tokens. */}
+        <div className="cth-glass" style={{
           width: sidebarWidth, flexShrink: 0,
           minHeight: 0, display: 'flex', flexDirection: 'column'
         }}>

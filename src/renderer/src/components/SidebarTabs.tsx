@@ -21,11 +21,13 @@ export interface SidebarTabsProps {
 export function SidebarTabs({ current, accent, onChange }: SidebarTabsProps) {
   const { t } = useTranslation();
   return (
-    <div style={{
+    <div role="tablist" style={{
       display: 'flex',
-      gap: 0,
-      background: 'var(--cth-cream-200)',
-      boxShadow: 'inset 0 -2px 0 var(--cth-ink-900)',
+      gap: 2,
+      padding: '0 6px',
+      background: 'var(--cth-cream-100)',
+      // v0.5: a hairline, not a 2px ink rule.
+      boxShadow: 'inset 0 -1px 0 var(--cth-ink-100)',
       flexShrink: 0
     }}>
       {TABS.map(tab => {
@@ -34,20 +36,19 @@ export function SidebarTabs({ current, accent, onChange }: SidebarTabsProps) {
           <button
             key={tab.key}
             onClick={() => onChange(tab.key)}
+            role="tab"
+            aria-selected={active}
+            className="cth-underline-tab"
             style={{
+              ['--tab-accent' as string]: `var(--cth-${accent})`,
               flex: 1,
               height: 36,
               padding: '0 10px',
               border: 'none',
               cursor: 'pointer',
-              background: active ? 'var(--cth-cream-100)' : 'transparent',
-              boxShadow: active
-                ? `inset 0 -3px 0 var(--cth-${accent}), inset 1px 0 0 var(--cth-ink-900), inset -1px 0 0 var(--cth-ink-900)`
-                : 'inset 0 0 0 0',
               fontFamily: 'var(--cth-font-display)',
               fontSize: 10,
               lineHeight: '14px',
-              color: active ? 'var(--cth-ink-900)' : 'var(--cth-ink-500)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',

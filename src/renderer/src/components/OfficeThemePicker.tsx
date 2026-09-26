@@ -203,7 +203,7 @@ function ThemeSwitchConfirmModal({
     <div
       onClick={busy ? undefined : onCancel}
       style={{
-        position: 'fixed', inset: 0, background: 'rgba(26, 19, 32, 0.7)',
+        position: 'fixed', inset: 0, background: 'var(--cth-scrim)', animation: 'cth-fade-in 160ms var(--cth-ease)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 400,
       }}
     >

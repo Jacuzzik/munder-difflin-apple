@@ -45,35 +45,41 @@ export function PixelButton({
   // disabled control should look like anyway.
   const disabledText = 'var(--cth-ink-500)';
 
+  // v0.5: fills ride the chrome tokens. `primary` is the palette's accent (ink
+  // in Original — the same #1A1320 fill as before — orange in Ember, magenta
+  // in Violet); `secondary` is a raised surface with a hairline.
   const palette = (() => {
     switch (variant) {
       case 'primary':
         return {
-          fill:    disabled ? 'var(--cth-cream-300)' : (hover ? 'var(--cth-ink-700)' : 'var(--cth-ink-900)'),
-          text:    disabled ? disabledText : 'var(--cth-cream-50)',
-          border:  'var(--cth-ink-900)',
-          shadow:  'var(--cth-ink-900)'
+          // v0.5.1: the filled pill — the same colour as the active nav pill.
+          fill:    disabled ? 'var(--cth-cream-300)'
+                   : (hover ? 'color-mix(in srgb, var(--cth-pill-active-bg) 88%, var(--cth-ink-500))' : 'var(--cth-pill-active-bg)'),
+          text:    disabled ? disabledText : 'var(--cth-pill-active-fg)',
+          border:  'transparent',
+          shadow:  'var(--cth-shadow-sm)'
         };
       case 'secondary':
         return {
-          fill:    disabled ? 'var(--cth-cream-300)' : (hover ? 'var(--cth-cream-200)' : 'var(--cth-cream-100)'),
+          // v0.5.1: an OUTLINED pill (reference: the stroked option pills).
+          fill:    disabled ? 'var(--cth-cream-300)' : (hover ? 'var(--cth-hover)' : 'transparent'),
           text:    disabled ? disabledText : 'var(--cth-ink-900)',
           border:  'var(--cth-ink-300)',
-          shadow:  'var(--cth-ink-100)'
+          shadow:  'none'
         };
       case 'ghost':
         return {
-          fill:    hover ? 'var(--cth-cream-200)' : 'transparent',
+          fill:    hover && !disabled ? 'var(--cth-hover)' : 'transparent',
           text:    disabled ? disabledText : 'var(--cth-ink-700)',
-          border:  'var(--cth-ink-300)',
-          shadow:  'var(--cth-ink-100)'
+          border:  'transparent',
+          shadow:  'none'
         };
       case 'destructive':
         return {
-          fill:    disabled ? 'var(--cth-cream-300)' : (hover ? 'var(--cth-coral-light)' : 'var(--cth-coral)'),
-          text:    disabled ? disabledText : 'var(--cth-ink-900)',
-          border:  'var(--cth-ink-500)',
-          shadow:  'var(--cth-ink-300)'
+          fill:    disabled ? 'var(--cth-cream-300)' : (hover ? 'color-mix(in srgb, var(--cth-coral) 85%, var(--cth-cream-50))' : 'var(--cth-coral)'),
+          text:    disabled ? disabledText : 'var(--cth-on-accent)',
+          border:  'transparent',
+          shadow:  'var(--cth-shadow-sm)'
         };
     }
   })();
@@ -117,11 +123,14 @@ export function PixelButton({
         background: palette.fill,
         color: palette.text,
         border: 'none',
-        // v0.3.4: 1px hairline + 1px lift — the 2px chrome read as heavy boxes
-        boxShadow: pressed && !disabled
+        // v0.5: hairline + soft lift at rest; on press the lift drops and the
+        // button settles (scale) on pointer-DOWN, so feedback is immediate.
+        borderRadius: 'var(--cth-radius-pill)',
+        boxShadow: pressed && !disabled || palette.shadow === 'none'
           ? `inset 0 0 0 1px ${palette.border}`
-          : `inset 0 0 0 1px ${palette.border}, 0 1px 0 ${palette.shadow}`,
-        transform: pressed && !disabled ? 'translateY(1px)' : 'none',
+          : `inset 0 0 0 1px ${palette.border}, ${palette.shadow}`,
+        transform: pressed && !disabled ? 'scale(0.97)' : 'none',
+        fontWeight: 500,
         fontFamily: 'var(--cth-font-ui)',
         fontSize: size === 'lg' ? 'var(--cth-text-body-md)' : 'var(--cth-text-body-sm)',
         cursor: disabled ? 'not-allowed' : 'pointer',

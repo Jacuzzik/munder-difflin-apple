@@ -88,8 +88,10 @@ export function AgentStrip({ config }: AgentStripProps) {
       padding: '14px 16px',
       overflowX: 'auto',
       overflowY: 'hidden',
-      borderTop: '1px solid var(--cth-ink-300)',
-      background: 'var(--cth-cream-200)',
+      // v0.5: the roster reads as a dock — one hairline, same ground as the
+      // workspace so the cards (not the bar) carry the weight.
+      // v0.5.1: no bar — the cards float on the ambient backdrop like a dock.
+      background: 'transparent',
       // Tall enough for the god card to stand proud of the row (it's taller and
       // rides a drop shadow) plus the hover-lift on every card, without clipping.
       height: 112,
@@ -179,7 +181,7 @@ export function AgentStrip({ config }: AgentStripProps) {
                     position: 'fixed', left, bottom, width, zIndex: 350,
                     padding: 10, boxSizing: 'border-box',
                     background: 'var(--cth-paper-100)',
-                    boxShadow: 'inset 0 0 0 1px var(--cth-ink-300), 3px 3px 0 rgba(26,19,32,0.14)',
+                    boxShadow: 'inset 0 0 0 1px var(--cth-ink-300), var(--cth-shadow-md)',
                     display: 'flex', flexDirection: 'column', gap: 6
                   }}
                 >
@@ -278,7 +280,7 @@ export function AgentStrip({ config }: AgentStripProps) {
             position: 'fixed', right: restoreMenuPos.right, bottom: restoreMenuPos.bottom,
             zIndex: 350, minWidth: 240, maxHeight: '50vh', overflowY: 'auto',
             background: 'var(--cth-cream-50)',
-            boxShadow: '0 0 0 2px var(--cth-ink-900), 3px 4px 0 0 rgba(26,19,32,0.22)',
+            boxShadow: '0 0 0 0.5px var(--cth-ink-300), var(--cth-shadow-lg)',
             padding: 8, display: 'flex', flexDirection: 'column', gap: 6,
             fontFamily: 'var(--cth-font-ui)'
           }}>

@@ -233,9 +233,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'var(--cth-cream-200)',
-      backgroundImage:
-        `repeating-linear-gradient(45deg, rgba(232, 217, 160, 0.4) 0 1px, transparent 1px 8px)`,
+      // v0.5.1: the same ambient backdrop as the workspace.
+      background: 'var(--cth-ambient)',
       // Scroll the overlay rather than clip the wizard. Step 2 lists every
       // installed CLI engine (8 rows + a model select), which is taller than a
       // 1080p-class window once the OS chrome is subtracted "— the panel was

@@ -66,9 +66,8 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'var(--cth-cream-200)',
-      backgroundImage:
-        `repeating-linear-gradient(45deg, rgba(232, 217, 160, 0.4) 0 1px, transparent 1px 8px)`,
+      // v0.5.1: the same ambient backdrop as the workspace.
+      background: 'var(--cth-ambient)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       zIndex: 200,
       padding: 32
