@@ -1,4 +1,5 @@
 @import './fonts.css';
+@import './fonts-library.css';
 @import './tokens.css';
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -21,7 +22,19 @@ html, body, #root {
 
 /* v0.5.1: a soft, STATIC ambient backdrop the glass panels float over (no
    image, no motion). html keeps the flat cream-100 as the first-paint colour. */
-body, #root { background: var(--cth-ambient); }
+/* The backdrop itself is painted by the .cth-backdrop layer (design/Backdrop.tsx)
+   so it can be a theme gradient, a colour or an image with dim/blur. body and
+   #root stay clear above html's flat first-paint colour. */
+body, #root { background: transparent; }
+/* True window transparency (opt-in, main process creates the window clear). */
+html.cth-window-transparent { background: transparent; }
+
+/* Body font chosen in the Appearance panel: normalise its x-height to the
+   default face's so layouts hold. Terminals and code editors measure their own
+   cells from the mono face and must never be touched. */
+body { font-size-adjust: var(--cth-body-adjust, none); }
+.xterm, .xterm *, .monaco-editor, .monaco-editor *, .cm-editor, .cm-editor *,
+[style*="--cth-font-mono"] { font-size-adjust: none; }
 body {
   background-image: none;
   -webkit-font-smoothing: antialiased;
@@ -390,9 +403,9 @@ canvas, img, svg { image-rendering: pixelated; image-rendering: crisp-edges; }
    renders like ~10–11px Inter. Presentation only: no call site changes, and
    swapping the token back restores the old look wholesale. */
 [style*="--cth-font-display"] {
-  font-weight: 600;
+  font-weight: var(--cth-display-weight, 600);
   letter-spacing: 0.045em;
-  font-size-adjust: 0.7;
+  font-size-adjust: var(--cth-display-adjust, 0.7);
 }
 /* These three properties inherit, so a display-slot container would otherwise
    push its weight/tracking/size-adjust into body text nested inside it. Any
@@ -401,8 +414,9 @@ canvas, img, svg { image-rendering: pixelated; image-rendering: crisp-edges; }
 [style*="--cth-font-display"] [style*="--cth-font-mono"] {
   font-weight: 400;
   letter-spacing: normal;
-  font-size-adjust: none;
+  font-size-adjust: var(--cth-body-adjust, none);
 }
+[style*="--cth-font-display"] [style*="--cth-font-mono"] { font-size-adjust: none; }
 
 /* Buttons: moderate radius + responsive press. Inline border-radius (a handful
    of flush controls) still wins, so nothing that was deliberately square moves.
@@ -575,9 +589,18 @@ input[type="password"], input[type="url"], input[type="email"], textarea {
 .cth-seg-tab:hover, .cth-underline-tab:hover { background: var(--cth-hover); color: var(--cth-ink-900); }
 .cth-seg-tab:active, .cth-underline-tab:active { transform: scale(0.97); }
 .cth-seg-tab[aria-selected="true"], .cth-underline-tab[aria-selected="true"] {
-  background: var(--cth-pill-active-bg);
+  /* The fill is the sliding .cth-tab-pill (components/rare/TabPill.tsx). */
+  background: transparent;
   color: var(--cth-pill-active-fg);
   font-weight: 600;
+  transition: color 160ms var(--cth-ease);
+}
+.cth-underline-tab > svg, .cth-seg-tab > svg { flex-shrink: 0; }
+.cth-tab-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cth-tab-pill {
+  position: absolute; inset: 0; z-index: -1;
+  border-radius: var(--cth-radius-pill);
+  background: var(--cth-pill-active-bg);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
 }
 /* The strips sit on a pill track, like the reference nav. !important only
@@ -590,6 +613,9 @@ input[type="password"], input[type="url"], input[type="email"], textarea {
   padding: 4px !important;
   box-shadow: none !important;
   border: none !important;
+  /* The travelling pill paints at z -1 INSIDE the strip: behind every label,
+     above the track. */
+  isolation: isolate;
 }
 
 /* ── Modal scrims ─────────────────────────────────────────────────────────
@@ -607,3 +633,135 @@ input[type="radio"], input[type="checkbox"], input[type="range"], progress { acc
    their corners slightly so they match every other v0.5 surface. Radius only —
    size, colour and layout are untouched. */
 span[style*="--cth-font-display"][style*="inset 0 0 0 1px"] { border-radius: var(--cth-radius-xs); }
+
+/* ── Backdrop layer ─────────────────────────────────────────────────────────
+   One fixed layer behind the whole app (and one contained copy inside focus
+   mode). It holds the theme gradient, a chosen colour, or the user's image;
+   blur and dim apply HERE only, on a static layer the compositor rasterises
+   once — nothing per frame. In a transparent window its opacity is the
+   Appearance panel's window-opacity slider. */
+.cth-backdrop {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
+  opacity: var(--cth-window-opacity, 1);
+  transition: opacity var(--cth-dur-med) var(--cth-ease);
+}
+.cth-backdrop--contained { position: absolute; opacity: 1; }
+.cth-backdrop__paint {
+  position: absolute;
+  /* oversize by the blur radius so blurred edges never fade to clear */
+  inset: calc(var(--cth-bg-blur, 0px) * -2);
+  background: var(--cth-backdrop, var(--cth-ambient));
+  filter: blur(var(--cth-bg-blur, 0px));
+}
+.cth-backdrop__dim { position: absolute; inset: 0; background: rgb(0 0 0 / var(--cth-bg-dim, 0)); }
+
+/* Visually hidden, still announced by screen readers. */
+.cth-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* ── Appearance panel (components/AppearancePanel.tsx) ───────────────────────
+   A non-modal floating sheet above the app (and above focus mode, 250), below
+   every modal (280+). Opaque surface so its own text is always readable. */
+.cth-ap-panel {
+  position: fixed; top: 64px; right: 12px; z-index: 260;
+  width: 360px; max-height: calc(100vh - 80px);
+  display: flex; flex-direction: column; outline: none;
+  background: var(--cth-popover-bg); color: var(--cth-ink-900);
+  border-radius: 22px; font-family: var(--cth-font-ui);
+  box-shadow: 0 0 0 0.5px var(--cth-glass-border), inset 0 0.5px 0 rgba(255,255,255,0.08), var(--cth-shadow-lg);
+}
+.cth-ap-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 6px 18px; }
+.cth-ap-header h2 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.cth-ap-scroll { overflow-y: auto; padding: 0 16px 6px; flex: 1; min-height: 0; }
+.cth-ap-section { padding: 12px 0; }
+.cth-ap-section + .cth-ap-section { border-top: 1px solid var(--cth-ink-100); }
+.cth-ap-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cth-ap-section-head h3 { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cth-ink-500); }
+.cth-ap-muted { font-size: 11.5px; line-height: 15px; color: var(--cth-ink-500); }
+.cth-ap-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+
+/* theme chips */
+.cth-ap-themes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.cth-ap-theme { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 4px; border: none; border-radius: 12px; background: transparent; color: var(--cth-ink-700); font-size: 12px; cursor: pointer; }
+.cth-ap-theme:hover { background: var(--cth-hover); }
+.cth-ap-theme[aria-checked="true"] { background: var(--cth-accent-soft); color: var(--cth-ink-900); box-shadow: inset 0 0 0 1.5px var(--cth-accent); }
+.cth-ap-theme-sw { position: relative; width: 46px; height: 30px; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.2); }
+.cth-ap-theme-sw i { position: absolute; left: 40%; top: 25%; right: -10%; bottom: -10%; border-radius: 4px; }
+.cth-ap-theme-sw b { position: absolute; left: 6px; top: 6px; width: 8px; height: 8px; border-radius: 50%; }
+
+/* colour control */
+.cth-ap-color { padding: 6px 0; }
+.cth-ap-color-head { display: flex; align-items: center; gap: 10px; }
+.cth-ap-swatch-btn { width: 28px; height: 28px; flex-shrink: 0; padding: 0; border: none; border-radius: 50% !important; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.18), 0 0 0 1px var(--cth-glass-border); }
+.cth-ap-color-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.cth-ap-color-name { font-size: 13px; font-weight: 500; }
+.cth-ap-hex { width: 80px; height: 26px; padding: 0 8px; border: none; font: 12px var(--cth-font-mono); background: var(--cth-paper-100); color: var(--cth-ink-900); text-transform: uppercase; }
+.cth-ap-color-body { overflow: hidden; }
+.cth-ap-presets { display: flex; flex-wrap: wrap; gap: 7px; padding: 2px 0 2px 74px; }
+.cth-ap-preset { width: 20px; height: 20px; padding: 0; border: none; border-radius: 50% !important; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.18); }
+.cth-ap-preset:hover { transform: scale(1.12); }
+.cth-ap-preset[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--cth-popover-bg), 0 0 0 3.5px var(--cth-ink-900); }
+.cth-ap-preview { display: flex; align-items: center; justify-content: space-between; margin-left: 74px; padding: 7px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+
+/* slider */
+.cth-ap-slider-row { display: grid; grid-template-columns: 64px 1fr 44px; align-items: center; gap: 10px; }
+.cth-ap-slider-row[data-disabled] { opacity: 0.45; }
+.cth-ap-slider-label { font-size: 12px; color: var(--cth-ink-700); }
+.cth-ap-slider-value { font: 11.5px var(--cth-font-mono); font-variant-numeric: tabular-nums; color: var(--cth-ink-500); text-align: right; }
+.cth-ap-slider { position: relative; height: 22px; cursor: pointer; touch-action: none; outline: none; }
+.cth-ap-slider-row[data-disabled] .cth-ap-slider { cursor: default; }
+.cth-ap-slider-track, .cth-ap-slider-fill { position: absolute; top: 50%; height: 6px; transform: translateY(-50%); border-radius: 999px; }
+.cth-ap-slider-track { left: 0; right: 0; background: var(--track); box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.18); }
+.cth-ap-slider-fill { left: 0; background: var(--cth-accent); }
+.cth-ap-slider-thumb { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.35), 0 0 0 0.5px rgba(0,0,0,0.2); }
+/* ring the THUMB, not the whole row box */
+.cth-ap-slider:focus-visible { box-shadow: none !important; }
+.cth-ap-slider:focus-visible .cth-ap-slider-thumb { box-shadow: var(--cth-focus-ring), 0 1px 3px rgba(0,0,0,0.35); }
+
+/* segmented control */
+.cth-ap-seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 3px; border-radius: 11px; background: var(--cth-pill-track); isolation: isolate; margin-bottom: 8px; }
+.cth-ap-seg-item { position: relative; height: 28px; border: none; border-radius: 8px !important; background: transparent; color: var(--cth-ink-700); font-size: 12.5px; font-weight: 500; cursor: pointer; }
+.cth-ap-seg-item[aria-checked="true"] { color: var(--cth-pill-active-fg); }
+.cth-ap-seg-pill { position: absolute; inset: 0; z-index: -1; border-radius: 8px; background: var(--cth-pill-active-bg); box-shadow: var(--cth-shadow-sm); }
+
+/* fonts */
+.cth-ap-pairs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+.cth-ap-pair { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 8px; border: none; border-radius: 12px; background: transparent; color: var(--cth-ink-900); cursor: pointer; box-shadow: inset 0 0 0 1px var(--cth-ink-100); }
+.cth-ap-pair:hover { background: var(--cth-hover); }
+.cth-ap-pair[aria-checked="true"] { background: var(--cth-accent-soft); box-shadow: inset 0 0 0 1.5px var(--cth-accent); }
+.cth-ap-pair-aa { font-size: 22px; line-height: 1.1; font-size-adjust: none; }
+.cth-ap-pair-name { font-size: 11px; color: var(--cth-ink-500); font-size-adjust: none; }
+.cth-ap-fontpick { position: relative; display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 10px; margin-top: 8px; }
+.cth-ap-select { display: flex; align-items: center; justify-content: space-between; height: 32px; padding: 0 10px; border: none; border-radius: 10px !important; background: var(--cth-paper-100); color: var(--cth-ink-900); font-size: 13.5px; cursor: pointer; box-shadow: inset 0 0 0 1px var(--cth-ink-100); font-size-adjust: none; }
+.cth-ap-listbox { position: absolute; top: calc(100% + 4px); left: 74px; right: 0; z-index: 5; max-height: 260px; overflow-y: auto; padding: 4px; outline: none; background: var(--cth-popover-bg); border-radius: 12px; box-shadow: 0 0 0 0.5px var(--cth-glass-border), var(--cth-shadow-lg); }
+.cth-ap-list-head { padding: 8px 10px 3px; font: 600 10.5px var(--cth-font-ui); letter-spacing: 0.06em; text-transform: uppercase; color: var(--cth-ink-500); }
+.cth-ap-option { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 8px; font-size: 14px; cursor: pointer; font-size-adjust: none; }
+.cth-ap-option[data-active] { background: var(--cth-hover); }
+.cth-ap-check { font-family: var(--cth-font-ui); color: var(--cth-ink-700); }
+
+/* background image */
+.cth-ap-drop { height: 110px; border-radius: 12px; display: grid; place-items: center; background: var(--cth-paper-100) center / cover no-repeat; box-shadow: inset 0 0 0 1px var(--cth-ink-100); }
+.cth-ap-drop[data-over] { box-shadow: inset 0 0 0 2px var(--cth-accent); }
+.cth-ap-image .cth-ap-slider-row { margin-top: 6px; }
+.cth-ap-btn { height: 28px; padding: 0 12px; border: none; border-radius: 999px !important; background: transparent; color: var(--cth-ink-900); font-size: 12.5px; font-weight: 500; cursor: pointer; box-shadow: inset 0 0 0 1px var(--cth-outline, var(--cth-ink-300)); }
+.cth-ap-btn:hover { background: var(--cth-hover); }
+.cth-ap-error { margin: 4px 0; font-size: 12px; color: var(--cth-danger-text); }
+
+/* switch */
+.cth-ap-switch-row { align-items: flex-start; }
+.cth-ap-switch { position: relative; flex-shrink: 0; width: 38px; height: 22px; padding: 0; border: none; border-radius: 999px !important; cursor: pointer; background: var(--cth-ink-100); box-shadow: inset 0 0 0 1px var(--cth-ink-300); }
+.cth-ap-switch[aria-checked="true"] { background: var(--cth-accent); box-shadow: none; }
+.cth-ap-switch-knob { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.cth-ap-note { margin: 4px 0 8px; padding: 6px 10px; border-radius: 8px; font-size: 12px; background: var(--cth-lemon-light); color: var(--cth-ink-900); }
+
+/* footer + text buttons */
+.cth-ap-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px 14px; border-top: 1px solid var(--cth-ink-100); }
+.cth-ap-link { padding: 4px 6px; border: none; border-radius: 6px; background: none; color: var(--cth-ink-700); font-size: 12.5px; font-weight: 500; cursor: pointer; }
+.cth-ap-link:hover { background: var(--cth-hover); color: var(--cth-ink-900); }
+.cth-ap-link[data-armed] { color: var(--cth-danger-text); }
+.cth-ap-credit { font-size: 11.5px; color: var(--cth-ink-500); text-decoration: none; }
+.cth-ap-credit:hover { color: var(--cth-ink-900); }
+.cth-popover-sep { height: 1px; margin: 4px 8px; background: var(--cth-ink-100); }
+.cth-customize-glyph { width: 34px; display: inline-flex; justify-content: center; color: var(--cth-ink-700); flex-shrink: 0; }

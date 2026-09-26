@@ -1,0 +1,232 @@
+Font library (Appearance panel) and its licenses
+===============================================
+
+These optional faces power the font chooser in the Appearance panel. They are
+NOT ours. Every one is licensed under the SIL Open Font License, Version 1.1,
+whose full text follows the attributions below. Latin subsets, taken from the
+Fontsource packages (@fontsource / @fontsource-variable) on npm. A face is only
+loaded when the user selects it.
+
+  dm-serif-display-latin-400-normal.woff2
+    DM Serif Display (latin subset) - OFL-1.1
+    Copyright 2014 - 2017 Adobe Systems Incorporated (http://www.adobe.com/), with Reserved Font Name 'Source'. Copyright 2019 Google LLC.
+
+  ibm-plex-mono-latin-400-normal.woff2, ibm-plex-mono-latin-700-normal.woff2
+    IBM Plex Mono (latin subset) - OFL-1.1
+    Copyright 2017 IBM Corp. All rights reserved.
+
+  instrument-serif-latin-400-normal.woff2
+    Instrument Serif (latin subset) - OFL-1.1
+    Copyright 2022 The Instrument Serif Project Authors (https://github.com/Instrument/instrument-serif)
+
+  libre-baskerville-latin-400-normal.woff2, libre-baskerville-latin-700-normal.woff2
+    Libre Baskerville (latin subset) - OFL-1.1
+    Copyright 2012 The Libre Baskerville Project Authors (https://github.com/impallari/Libre-Baskerville)
+
+  silkscreen-latin-400-normal.woff2, silkscreen-latin-700-normal.woff2
+    Silkscreen (latin subset) - OFL-1.1
+    Copyright 2001 The Silkscreen Project Authors (https://github.com/googlefonts/silkscreen)
+
+  space-mono-latin-400-normal.woff2, space-mono-latin-700-normal.woff2
+    Space Mono (latin subset) - OFL-1.1
+    Copyright 2016 The Space Mono Project Authors (https://github.com/googlefonts/spacemono)
+
+  albert-sans-latin-wght-normal.woff2
+    Albert Sans (latin subset) - OFL-1.1
+    Copyright 2021 The Albert Sans Project Authors (https://github.com/usted/Albert-Sans)
+
+  bricolage-grotesque-latin-wght-normal.woff2
+    Bricolage Grotesque (latin subset) - OFL-1.1
+    Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage)
+
+  cormorant-garamond-latin-wght-normal.woff2
+    Cormorant Garamond (latin subset) - OFL-1.1
+    Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant)
+
+  dm-sans-latin-wght-normal.woff2
+    DM Sans (latin subset) - OFL-1.1
+    Copyright 2014 The DM Sans Project Authors (https://github.com/googlefonts/dm-fonts)
+
+  eb-garamond-latin-wght-normal.woff2
+    EB Garamond (latin subset) - OFL-1.1
+    Copyright 2017 The EB Garamond Project Authors (https://github.com/octaviopardo/EBGaramond12)
+
+  figtree-latin-wght-normal.woff2
+    Figtree (latin subset) - OFL-1.1
+    Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)
+
+  fira-code-latin-wght-normal.woff2
+    Fira Code (latin subset) - OFL-1.1
+    Copyright 2014-2020 The Fira Code Project Authors (https://github.com/tonsky/FiraCode)
+
+  fraunces-latin-wght-normal.woff2
+    Fraunces (latin subset) - OFL-1.1
+    Copyright 2020 The Fraunces Project Authors (github.com/undercasetype/Fraunces)
+
+  geist-latin-wght-normal.woff2
+    Geist (latin subset) - OFL-1.1
+    Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font)
+
+  geist-mono-latin-wght-normal.woff2
+    Geist Mono (latin subset) - OFL-1.1
+    Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)
+
+  ibm-plex-sans-latin-wght-normal.woff2
+    IBM Plex Sans (latin subset) - OFL-1.1
+    Copyright 2019 IBM Corp. All rights reserved.
+
+  lexend-latin-wght-normal.woff2
+    Lexend (latin subset) - OFL-1.1
+    Copyright 2019 The Lexend Project Authors (https://github.com/googlefonts/lexend)
+
+  lora-latin-wght-normal.woff2
+    Lora (latin subset) - OFL-1.1
+    Copyright 2011 The Lora Project Authors (https://github.com/cyrealtype/Lora-Cyrillic), with Reserved Font Name "Lora".
+
+  manrope-latin-wght-normal.woff2
+    Manrope (latin subset) - OFL-1.1
+    Copyright 2019 The Manrope Project Authors (https://github.com/sharanda/manrope)
+
+  nunito-latin-wght-normal.woff2
+    Nunito (latin subset) - OFL-1.1
+    Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito)
+
+  onest-latin-wght-normal.woff2
+    Onest (latin subset) - OFL-1.1
+    Copyright 2021 The Onest Project Authors (https://github.com/simpals/onest)
+
+  outfit-latin-wght-normal.woff2
+    Outfit (latin subset) - OFL-1.1
+    Copyright 2021 The Outfit Project Authors (https://github.com/Outfitio/Outfit-Fonts)
+
+  pixelify-sans-latin-wght-normal.woff2
+    Pixelify Sans (latin subset) - OFL-1.1
+    Copyright 2021 The Pixelify Sans Project Authors (https://github.com/eifetx/Pixelify-Sans)
+
+  playfair-display-latin-wght-normal.woff2
+    Playfair Display (latin subset) - OFL-1.1
+    Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display".
+
+  plus-jakarta-sans-latin-wght-normal.woff2
+    Plus Jakarta Sans (latin subset) - OFL-1.1
+    Copyright 2020 The Plus Jakarta Sans Project Authors (https://github.com/tokotype/PlusJakartaSans)
+
+  rubik-latin-wght-normal.woff2
+    Rubik (latin subset) - OFL-1.1
+    Copyright 2015 The Rubik Project Authors (https://github.com/googlefonts/rubik)
+
+  sora-latin-wght-normal.woff2
+    Sora (latin subset) - OFL-1.1
+    Copyright 2019 The Sora Project Authors (https://github.com/sora-xor/sora-font)
+
+  space-grotesk-latin-wght-normal.woff2
+    Space Grotesk (latin subset) - OFL-1.1
+    Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk)
+
+  syne-latin-wght-normal.woff2
+    Syne (latin subset) - OFL-1.1
+    Copyright 2019 The Syne Project Authors (https://gitlab.com/bonjour-monde/fonderie/syne-typeface)
+
+  unbounded-latin-wght-normal.woff2
+    Unbounded (latin subset) - OFL-1.1
+    Copyright 2022 The Unbounded Project Authors (https://github.com/googlefonts/unbounded)
+
+  urbanist-latin-wght-normal.woff2
+    Urbanist (latin subset) - OFL-1.1
+    Copyright 2021 The Urbanist Project Authors (https://github.com/coreyhu/Urbanist)
+
+  work-sans-latin-wght-normal.woff2
+    Work Sans (latin subset) - OFL-1.1
+    Copyright 2019 The Work Sans Project Authors (https://github.com/weiweihuanghuang/Work-Sans)
+
+  vt323-latin-400-normal.woff2
+    VT323 (latin subset) - OFL-1.1
+    Copyright 2011, The VT323 Project Authors (peter.hull@oikoi.com)
+
+------------------------------------------------------------------------------
+
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.

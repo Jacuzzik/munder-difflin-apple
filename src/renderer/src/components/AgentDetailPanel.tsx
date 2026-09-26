@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PixelPanel } from './PixelPanel';
 import { PixelBadge } from './PixelBadge';
 import { PixelButton } from './PixelButton';
+import { DeleteButton } from './rare/DeleteButton';
 import { SpritePortrait } from './SpritePortrait';
 import { PtyTerminalView } from './PtyTerminalView';
 import { terminalInstanceKey } from './terminalRecovery';
@@ -117,7 +118,8 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
 
   const onKill = async () => {
     if (!agent.ptyId) return;
-    if (!confirm(t('agentDetail.killConfirm', { name: agent.name }))) return;
+    // Confirmation now happens in place (DeleteButton: bin → ✓ / ✕) instead of
+    // a native confirm() popup; this only runs after an explicit ✓.
     await window.cth.killPty(agent.ptyId);
     disposeTerminal(agent.ptyId);
     archiveAgent(agent.id);
@@ -215,9 +217,13 @@ export function AgentDetailPanel({ agent }: AgentDetailPanelProps) {
           </span>
         </PixelButton>
         {isReal && (
-          <PixelButton variant="destructive" size="sm" onClick={onKill}>
-            <Icon name="x" />
-          </PixelButton>
+          <DeleteButton
+            label={t('agentDetail.killLabel', { name: agent.name })}
+            description={t('agentDetail.killConfirm', { name: agent.name })}
+            confirmLabel={t('agentDetail.killDo', { name: agent.name })}
+            cancelLabel={t('agentDetail.killKeep', { name: agent.name })}
+            onConfirm={() => { void onKill(); }}
+          />
         )}
       </div>
 

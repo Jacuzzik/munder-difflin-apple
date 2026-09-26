@@ -154,7 +154,10 @@
     "terminalTip": "在 {{cwd}} 中打开你的系统终端应用 —— 位于该智能体文件夹中的普通 shell，与该智能体自己的终端相互独立。",
     "openIde": "打开 IDE",
     "ide": "IDE",
-    "openTerminalAria": "在该智能体的文件夹中打开系统终端"
+    "openTerminalAria": "在该智能体的文件夹中打开系统终端",
+    "killLabel": "关闭 {{name}}",
+    "killDo": "立即关闭 {{name}}",
+    "killKeep": "保持 {{name}} 运行"
   },
   "settingsHero": {
     "sponsoredBy": "赞助方",

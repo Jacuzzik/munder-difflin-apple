@@ -154,7 +154,10 @@
     "terminalTip": "Open your system terminal app in {{cwd}} — a normal shell in this agent's folder, separate from the agent's own terminal.",
     "openIde": "Open the IDE",
     "ide": "IDE",
-    "openTerminalAria": "Open a system terminal in this agent's folder"
+    "openTerminalAria": "Open a system terminal in this agent's folder",
+    "killLabel": "Close {{name}}",
+    "killDo": "Close {{name}} now",
+    "killKeep": "Keep {{name}} running"
   },
   "settingsHero": {
     "sponsoredBy": "Sponsored by",

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PixelPanel } from './PixelPanel';
 import { PixelBadge } from './PixelBadge';
@@ -37,6 +37,8 @@ import {
 import { canReceiveInbox } from '@shared/agentProvider';
 import { isComposingKey } from '@shared/imeGuard';
 import { useRtl } from '@/i18n/useDirection';
+import { LayoutGroup } from 'motion/react';
+import { TabPill } from './rare/TabPill';
 
 /** Michael's control surface. Shown instead of the plain terminal/files panel
  *  when the god agent is selected: terminal + queue, the floor roster (with
@@ -86,6 +88,8 @@ const TABS: { key: CCTab; labelKey: string; icon: Parameters<typeof Icon>[0]['na
 export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent; fullscreen?: boolean }) {
   const { t } = useTranslation();
   const [tab, setTab] = useState<CCTab>('terminal');
+  // Scopes the sliding tab pill to THIS panel (several can be mounted at once).
+  const tabGroupId = useId();
   // The trigger-history ledger has nothing to say until an outside party can
   // reach us, so its tab appears only once an org key or a webhook exists. This
   // is the first config-gated tab in the panel: TABS stays the canonical order
@@ -247,6 +251,7 @@ export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent
           that sometimes needs a scroll beats two rows where one is nearly empty —
           and the grid's own reason for existing (keeping wrapped rows aligned)
           stops applying the moment there is only ever one row. */}
+      <LayoutGroup id={tabGroupId}>
       <div className="cth-tabbar" style={{
         display: 'flex', gap: 4,
         // Docked in the sidebar the panel is narrow, so tabs WRAP: a second row
@@ -281,10 +286,12 @@ export function CommandCenterPanel({ agent, fullscreen = false }: { agent: Agent
               fontFamily: 'var(--cth-font-ui)', fontSize: 12.5
             }}
           >
+            {tab === tabDef.key && <TabPill />}
             <Icon name={tabDef.icon} /> {t(tabDef.labelKey)}
           </button>
         ))}
       </div>
+      </LayoutGroup>
 
       {/* Body */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>

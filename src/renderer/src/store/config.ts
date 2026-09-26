@@ -151,6 +151,12 @@ export interface HarnessConfig {
    *  gives the first paint; this durable copy survives a quit that lands inside
    *  Chromium's localStorage commit window (every quit ends in app.exit()). */
   appPalette?: string;
+  /** Appearance-panel customisation (design/appearance.ts); renderer-owned,
+   *  persisted verbatim by main's writeConfig merge. */
+  appAppearance?: unknown;
+  /** Create the window transparent (read by MAIN at window creation — needs a
+   *  restart to take effect). Mirrored from the Appearance panel. */
+  windowTransparency?: boolean;
   webhookTriggers?: WebhookTrigger[];
   /** Peer messaging between teammates' clone nodes (persistence + UI only). */
   orgTrigger?: OrgTriggerConfig;

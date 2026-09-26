@@ -1,0 +1,44 @@
+/* Font library for the Appearance panel — GENERATED from assets/fonts/library.
+ * One @font-face per bundled file. Nothing here loads until a face is actually
+ * used: the browser fetches a font file only when some element asks for it.
+ * Family names carry an 'MDL ' prefix so a same-named system font can never
+ * shadow the bundled file. Licenses: assets/fonts/library/LICENSE.txt (OFL-1.1). */
+
+@font-face { font-family: 'MDL Albert Sans'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/albert-sans-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Bricolage Grotesque'; font-style: normal; font-display: swap; font-weight: 200 800; src: url('../assets/fonts/library/bricolage-grotesque-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Cormorant Garamond'; font-style: normal; font-display: swap; font-weight: 300 700; src: url('../assets/fonts/library/cormorant-garamond-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL DM Sans'; font-style: normal; font-display: swap; font-weight: 100 1000; src: url('../assets/fonts/library/dm-sans-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL DM Serif Display'; font-style: normal; font-display: swap; font-weight: 400; src: url('../assets/fonts/library/dm-serif-display-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL EB Garamond'; font-style: normal; font-display: swap; font-weight: 400 800; src: url('../assets/fonts/library/eb-garamond-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Figtree'; font-style: normal; font-display: swap; font-weight: 300 900; src: url('../assets/fonts/library/figtree-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Fira Code'; font-style: normal; font-display: swap; font-weight: 300 700; src: url('../assets/fonts/library/fira-code-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Fraunces'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/fraunces-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Geist'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/geist-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Geist Mono'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/geist-mono-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL IBM Plex Mono'; font-style: normal; font-display: swap; font-weight: 400; src: url('../assets/fonts/library/ibm-plex-mono-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL IBM Plex Mono'; font-style: normal; font-display: swap; font-weight: 700; src: url('../assets/fonts/library/ibm-plex-mono-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL IBM Plex Sans'; font-style: normal; font-display: swap; font-weight: 100 700; src: url('../assets/fonts/library/ibm-plex-sans-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Instrument Serif'; font-style: normal; font-display: swap; font-weight: 400; src: url('../assets/fonts/library/instrument-serif-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Lexend'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/lexend-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Libre Baskerville'; font-style: normal; font-display: swap; font-weight: 400; src: url('../assets/fonts/library/libre-baskerville-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Libre Baskerville'; font-style: normal; font-display: swap; font-weight: 700; src: url('../assets/fonts/library/libre-baskerville-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Lora'; font-style: normal; font-display: swap; font-weight: 400 700; src: url('../assets/fonts/library/lora-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Manrope'; font-style: normal; font-display: swap; font-weight: 200 800; src: url('../assets/fonts/library/manrope-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Nunito'; font-style: normal; font-display: swap; font-weight: 200 1000; src: url('../assets/fonts/library/nunito-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Onest'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/onest-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Outfit'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/outfit-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Pixelify Sans'; font-style: normal; font-display: swap; font-weight: 400 700; src: url('../assets/fonts/library/pixelify-sans-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Playfair Display'; font-style: normal; font-display: swap; font-weight: 400 900; src: url('../assets/fonts/library/playfair-display-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Plus Jakarta Sans'; font-style: normal; font-display: swap; font-weight: 200 800; src: url('../assets/fonts/library/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Rubik'; font-style: normal; font-display: swap; font-weight: 300 900; src: url('../assets/fonts/library/rubik-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Silkscreen'; font-style: normal; font-display: swap; font-weight: 400; src: url('../assets/fonts/library/silkscreen-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Silkscreen'; font-style: normal; font-display: swap; font-weight: 700; src: url('../assets/fonts/library/silkscreen-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Sora'; font-style: normal; font-display: swap; font-weight: 100 800; src: url('../assets/fonts/library/sora-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Space Grotesk'; font-style: normal; font-display: swap; font-weight: 300 700; src: url('../assets/fonts/library/space-grotesk-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Space Mono'; font-style: normal; font-display: swap; font-weight: 400; src: url('../assets/fonts/library/space-mono-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Space Mono'; font-style: normal; font-display: swap; font-weight: 700; src: url('../assets/fonts/library/space-mono-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Syne'; font-style: normal; font-display: swap; font-weight: 400 800; src: url('../assets/fonts/library/syne-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Unbounded'; font-style: normal; font-display: swap; font-weight: 200 900; src: url('../assets/fonts/library/unbounded-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Urbanist'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/urbanist-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL VT323'; font-style: normal; font-display: swap; font-weight: 400; src: url('../assets/fonts/library/vt323-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'MDL Work Sans'; font-style: normal; font-display: swap; font-weight: 100 900; src: url('../assets/fonts/library/work-sans-latin-wght-normal.woff2') format('woff2'); }

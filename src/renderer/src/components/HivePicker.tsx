@@ -66,8 +66,8 @@ export function HivePicker({ config, onOpenCurrent }: HivePickerProps) {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      // v0.5.1: the same ambient backdrop as the workspace.
-      background: 'var(--cth-ambient)',
+      // The global Backdrop layer (theme gradient / colour / image) shows through.
+      background: 'transparent',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       zIndex: 200,
       padding: 32

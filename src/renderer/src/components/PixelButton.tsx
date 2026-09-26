@@ -64,7 +64,9 @@ export function PixelButton({
           // v0.5.1: an OUTLINED pill (reference: the stroked option pills).
           fill:    disabled ? 'var(--cth-cream-300)' : (hover ? 'var(--cth-hover)' : 'transparent'),
           text:    disabled ? disabledText : 'var(--cth-ink-900)',
-          border:  'var(--cth-ink-300)',
+          // --cth-outline is the Appearance panel's secondary colour; unset, the
+          // element's own ink-300 is used (so inverted cards still work).
+          border:  'var(--cth-outline, var(--cth-ink-300))',
           shadow:  'none'
         };
       case 'ghost':

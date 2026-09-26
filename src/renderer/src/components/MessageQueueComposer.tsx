@@ -10,6 +10,7 @@ import { freeflowRecorder, useFreeflow } from '@/freeflow/recorder';
 import { useTerminalFontSize } from './terminalFontSize';
 import { isComposingKey } from '@shared/imeGuard';
 import { useRtl } from '@/i18n/useDirection';
+import { AnimatedCounter } from './rare/AnimatedCounter';
 
 const EMPTY_QUEUE: QueuedMessage[] = [];
 
@@ -225,7 +226,7 @@ export function MessageQueueComposer({ agent }: MessageQueueComposerProps) {
             background: 'var(--cth-cream-200)',
             boxShadow: 'inset 0 0 0 1px var(--cth-ink-100)',
             fontFamily: 'var(--cth-font-ui)', color: 'var(--cth-ink-900)'
-          }}>{queue.length}</span>
+          }}><AnimatedCounter value={queue.length} /></span>
         )}
         {statusHint && (
           <span

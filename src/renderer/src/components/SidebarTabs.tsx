@@ -2,6 +2,9 @@ import { useTranslation } from 'react-i18next';
 import { type SidebarTab } from '@/store/store';
 import { type AccentColorName } from '@/design/tokens';
 import { Icon, type IconName } from './Icon';
+import { useId } from 'react';
+import { LayoutGroup } from 'motion/react';
+import { TabPill } from './rare/TabPill';
 
 // v0.3.4: the files tab is gone — the per-agent IDE button (header) opens the
 // full Monaco editor + file tree, which superseded the read-only browser.
@@ -20,7 +23,10 @@ export interface SidebarTabsProps {
 
 export function SidebarTabs({ current, accent, onChange }: SidebarTabsProps) {
   const { t } = useTranslation();
+  // Scopes the sliding tab pill to this strip (sidebar + focus mode can coexist).
+  const groupId = useId();
   return (
+    <LayoutGroup id={groupId}>
     <div role="tablist" style={{
       display: 'flex',
       gap: 2,
@@ -41,9 +47,12 @@ export function SidebarTabs({ current, accent, onChange }: SidebarTabsProps) {
             className="cth-underline-tab"
             style={{
               ['--tab-accent' as string]: `var(--cth-${accent})`,
-              flex: 1,
+              // Shrinkable, content-sized: wide chosen fonts (Appearance → Fonts)
+              // must never push the last tab out of the strip.
+              flex: '1 1 auto',
+              minWidth: 0,
               height: 36,
-              padding: '0 10px',
+              padding: '0 6px',
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'var(--cth-font-display)',
@@ -52,13 +61,15 @@ export function SidebarTabs({ current, accent, onChange }: SidebarTabsProps) {
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 6
+              gap: 4
             }}
           >
-            <Icon name={tab.icon} /> {t(tab.labelKey).toUpperCase()}
+            {active && <TabPill />}
+            <Icon name={tab.icon} /><span className="cth-tab-label">{t(tab.labelKey).toUpperCase()}</span>
           </button>
         );
       })}
     </div>
+    </LayoutGroup>
   );
 }

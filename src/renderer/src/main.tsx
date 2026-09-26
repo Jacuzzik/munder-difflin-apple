@@ -1,8 +1,12 @@
 import { StrictMode } from 'react';
+import { MotionConfig } from 'motion/react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { Backdrop } from './design/Backdrop';
 import brandLogo from '@brand/logo.png?url';
 import './design/global.css';
+// Applies saved appearance (colours, fonts, background) before first render.
+import './design/appearance';
 import './i18n';
 
 const favicon = document.createElement('link');
@@ -25,6 +29,10 @@ if (!root) throw new Error('No root element');
 
 createRoot(root).render(
   <StrictMode>
-    <App />
+    {/* Every Motion animation honours the OS reduced-motion setting. */}
+    <MotionConfig reducedMotion="user">
+      <Backdrop />
+      <App />
+    </MotionConfig>
   </StrictMode>
 );

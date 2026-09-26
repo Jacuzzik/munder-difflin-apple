@@ -21,11 +21,12 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { PixelButton } from './PixelButton';
 import { Icon } from './Icon';
+import { MatrixOrb, type MatrixOrbState } from './rare/MatrixOrb';
 import { useStore } from '@/store/store';
 import { useRealtimeMichael, type RealtimeStatus } from '@/realtime/session';
 
-/** Per-status presentation: button variant, SHORT label, dot color, and (optional)
- *  animation for the live-state indicator dot. Maps hook.status → visuals.
+/** Per-status presentation: button variant, SHORT label, and the colour of the
+ *  live-state orb (its motion comes from ORB_STATE). Maps hook.status → visuals.
  *  Labels are i18n keys (`realtimeToggle.*`); the long help/title text is
  *  resolved per-render via t() since it can interpolate the error. */
 const STATE_VIEW: Record<
@@ -34,7 +35,6 @@ const STATE_VIEW: Record<
     variant: 'primary' | 'secondary' | 'destructive';
     labelKey: string;
     dot: string;
-    anim?: string;
     helpKey: string;
     /** When live, the button fill — a distinct accent so the active mic never
      *  reads as a flat black 'primary' button. (working uses the destructive
@@ -52,14 +52,12 @@ const STATE_VIEW: Record<
     variant: 'secondary',
     labelKey: 'realtimeToggle.connecting',
     dot: 'var(--cth-lemon)',
-    anim: 'cth-blink 700ms steps(2, end) infinite',
     helpKey: 'realtimeToggle.helpConnecting'
   },
   listening: {
     variant: 'primary',
     labelKey: 'realtimeToggle.listening',
     dot: 'var(--cth-mint)',
-    anim: 'cth-pulse 1000ms steps(2, end) infinite',
     helpKey: 'realtimeToggle.helpListening',
     activeBg: 'var(--cth-mint)'
   },
@@ -67,7 +65,6 @@ const STATE_VIEW: Record<
     variant: 'primary',
     labelKey: 'realtimeToggle.speaking',
     dot: 'var(--cth-sky)',
-    anim: 'cth-pulse 600ms steps(2, end) infinite',
     helpKey: 'realtimeToggle.helpSpeaking',
     activeBg: 'var(--cth-sky)'
   },
@@ -75,9 +72,18 @@ const STATE_VIEW: Record<
     variant: 'destructive',
     labelKey: 'realtimeToggle.working',
     dot: 'var(--cth-coral)',
-    anim: 'cth-blink 500ms steps(2, end) infinite',
     helpKey: 'realtimeToggle.helpWorking'
   }
+};
+
+/** Voice-loop status → Matrix Orb mode. Speaking reuses the listening ripple
+ *  (sound going out rather than in); connecting and tool-work read as thinking. */
+const ORB_STATE: Record<RealtimeStatus, MatrixOrbState> = {
+  off: 'idle',
+  connecting: 'thinking',
+  listening: 'listening',
+  responding: 'listening',
+  working: 'thinking'
 };
 
 export interface RealtimeMichaelToggleProps {
@@ -205,17 +211,15 @@ export function RealtimeMichaelToggle({ compact = false }: RealtimeMichaelToggle
         style={!noKey && view.activeBg ? { background: view.activeBg, color: 'var(--cth-ink-900)' } : undefined}
       >
         <span style={{ display: 'inline-flex', gap: 5, alignItems: 'center' }}>
-          {/* Live-state indicator dot — color + animation reflect the loop status. */}
-          <span
-            aria-hidden
-            style={{
-              width: 6,
-              height: 6,
-              flexShrink: 0,
-              background: noKey ? 'var(--cth-ink-300)' : view.dot,
-              boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
-              animation: noKey ? 'none' : view.anim
-            }}
+          {/* Live-state indicator: Rare UI's Matrix Orb (components/rare). Colour
+              is the old dot's; motion = the loop status. It animates only while
+              the voice loop is live — off/no-key draws one still frame. The
+              button's words carry the state, the orb is decoration (aria-hidden). */}
+          <MatrixOrb
+            state={ORB_STATE[status]}
+            active={!noKey && status !== 'off'}
+            color={noKey ? 'var(--cth-ink-300)' : view.dot}
+            size={16}
           />
           <Icon name="mic" />
           {!compact && (

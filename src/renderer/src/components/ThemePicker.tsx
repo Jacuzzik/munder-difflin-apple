@@ -14,6 +14,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { PALETTES, paletteInfo, useAppPalette, type AppPalette, type PaletteInfo } from '@/design/theme';
 import { selectPalette } from '@/design/themeActions';
+import { openAppearancePanel } from './AppearancePanel';
 
 export function ThemePicker() {
   const current = useAppPalette();
@@ -123,6 +124,24 @@ export function ThemePicker() {
               </button>
             );
           })}
+          <div className="cth-popover-sep" role="separator" />
+          <button
+            ref={(el) => { itemRefs.current[PALETTES.length] = el; }}
+            type="button"
+            role="menuitem"
+            className="cth-theme-option"
+            onClick={() => { setOpen(false); openAppearancePanel(); }}
+          >
+            <span aria-hidden="true" className="cth-customize-glyph">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <path d="M3 4.5h6M12 4.5h1M3 11.5h1M7 11.5h6" /><circle cx="10.5" cy="4.5" r="1.5" /><circle cx="5.5" cy="11.5" r="1.5" />
+              </svg>
+            </span>
+            <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+              <span className="cth-theme-option-name">Customize…</span>
+              <span className="cth-theme-option-blurb">Colours, fonts, background, transparency</span>
+            </span>
+          </button>
         </div>
       )}
     </div>

@@ -7,6 +7,7 @@ import { Icon } from './Icon';
 import { useStore } from '@/store/store';
 import { MarkdownPreview } from '@/markdown/MarkdownPreview';
 import { useRtl } from '@/i18n/useDirection';
+import { AnimatedCounter, CountText } from './rare/AnimatedCounter';
 
 /** A card on the task kanban. Mirrors HiveTask in the main/preload process —
  *  re-declared locally so the renderer doesn't reach into the preload package
@@ -171,7 +172,7 @@ export function TasksKanban() {
         borderBottom: '1px solid var(--cth-ink-300)'
       }}>
         <span style={{ fontFamily: 'var(--cth-font-display)', fontSize: 9, color: 'var(--cth-ink-500)' }}>
-          {t('kanban.count', { count: tasks.length })}
+          <CountText text={t('kanban.count', { count: tasks.length })} count={tasks.length} />
         </span>
         <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--cth-ink-300)' }}>
           {t('kanban.newWorkHint')}
@@ -195,7 +196,7 @@ export function TasksKanban() {
                 fontFamily: 'var(--cth-font-display)', fontSize: 9, color: 'var(--cth-ink-900)'
               }}>
                 {t(col.labelKey)}
-                <span style={{ marginLeft: 'auto', fontSize: 11, fontFamily: 'var(--cth-font-ui)' }}>{cards.length}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 11, fontFamily: 'var(--cth-font-ui)' }}><AnimatedCounter value={cards.length} /></span>
               </div>
               <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {cards.length === 0 && (

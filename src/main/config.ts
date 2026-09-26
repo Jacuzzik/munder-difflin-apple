@@ -305,6 +305,11 @@ export interface HarnessConfig {
    *  ("theme" key) at spawn so the TUI's truecolor palette matches. Scoped to
    *  harness agents only; the user's global Claude theme is never touched. */
   terminalTheme?: 'light' | 'dark';
+  /** Opt-in from the renderer's Appearance panel: create the window transparent
+   *  so the desktop shows through the app. Read ONCE when a window is created
+   *  (Electron cannot toggle it later), so it takes effect after a restart.
+   *  Unset/false = the normal opaque window, exactly as before. */
+  windowTransparency?: boolean;
   /** Anonymous product analytics (PostHog) — the exact events/properties are
    *  documented in TELEMETRY.md. Default ON (opt-out, like autoUpdate); builds
    *  without an injected key and environments with DO_NOT_TRACK set never send

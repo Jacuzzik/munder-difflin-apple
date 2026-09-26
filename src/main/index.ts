@@ -2302,6 +2302,12 @@ function createWindow(opts: { floor?: boolean } = {}): BrowserWindow {
   const cascade = isFloor ? floorCascade() : null;
   const geom = cascade ?? saved;
 
+  // Opt-in transparent window (Appearance panel). Off → the opaque window exactly
+  // as before. Needs a compositing window manager on Linux; the renderer keeps
+  // text and panels opaque and only thins the backdrop.
+  let transparentWindow = false;
+  try { transparentWindow = readConfig().windowTransparency === true; } catch { transparentWindow = false; }
+
   const win = new BrowserWindow({
     width: geom?.width ?? DEFAULT_WIN.width,
     height: geom?.height ?? DEFAULT_WIN.height,
@@ -2309,7 +2315,8 @@ function createWindow(opts: { floor?: boolean } = {}): BrowserWindow {
     minWidth: MIN_WIN.width,
     minHeight: MIN_WIN.height,
     title: isFloor ? 'Munder Difflin — Floor' : 'Munder Difflin',
-    backgroundColor: '#FFF8E7',
+    backgroundColor: transparentWindow ? '#00000000' : '#FFF8E7',
+    ...(transparentWindow ? { transparent: true } : {}),
     titleBarStyle: 'hiddenInset',
     show: false,
     webPreferences: {

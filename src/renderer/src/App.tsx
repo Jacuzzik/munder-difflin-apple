@@ -21,7 +21,9 @@ import { CompletionToast } from '@/realtime/CompletionToast';
 import { UpdateToast } from '@/components/UpdateToast';
 import { UpdateBadge } from '@/components/UpdateBadge';
 import { ThemePicker } from '@/components/ThemePicker';
+import { AppearancePanel } from '@/components/AppearancePanel';
 import { adoptPersistedPalette } from '@/design/theme';
+import { initAppearance } from '@/design/appearance';
 import { SettingsModal, type Section as SettingsSection } from '@/components/SettingsModal';
 import { PixelPanel } from '@/components/PixelPanel';
 import { PixelButton } from '@/components/PixelButton';
@@ -124,6 +126,9 @@ export function App() {
       // The config holds the durable copy of the chrome palette; localStorage only
       // painted the first frame. Adopt it if a quit lost the localStorage write.
       adoptPersistedPalette(withTriggers.appPalette);
+      // Same for colours, fonts and background; also learns whether THIS window
+      // was created transparent.
+      initAppearance(withTriggers);
     });
     // Mirror BYOK OpenAI key presence (boolean only; the key never leaves main) so the
     // Realtime Michael voice toggle can gate on it. Lives in the secret broker, not
@@ -482,6 +487,8 @@ export function App() {
       {fullscreenAgentId && <FullscreenTerminal config={config} />}
       {ideOpen && <IdePanel />}
       <TaskDetailOverlay />
+      {/* Non-modal Appearance sheet (opened from the theme menu). */}
+      <AppearancePanel />
     </div>
   );
 }

@@ -21,6 +21,8 @@ import { useTerminalFontSize } from './terminalFontSize';
 import { useHasTerminalDraft, disposeTerminal, reflowTerminal } from './terminalPool';
 import { useAppTheme } from '@/design/theme';
 import { toggleModeEverywhere } from '@/design/themeActions';
+import { Backdrop } from '@/design/Backdrop';
+import { DeleteButton } from './rare/DeleteButton';
 import type { HarnessConfig } from '@/store/config';
 import { useRtl } from '@/i18n/useDirection';
 
@@ -288,12 +290,15 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'var(--cth-ambient)',
+      // Opaque over the app beneath: its own contained Backdrop paints the
+      // theme gradient / colour / image (child below).
+      background: 'transparent',
       zIndex: 250,
       display: 'flex',
       flexDirection: 'column',
       paddingTop: 36  // leave room for macOS traffic lights / drag region
     }}>
+      <Backdrop contained />
       {/* Title bar drag region (so the user can still move the window) */}
       <div
         className="cth-titlebar-drag"
@@ -910,7 +915,7 @@ function Header({ agent, onEdit }: { agent: Agent; onEdit: () => void }) {
    *  button would read as "restart Michael" while looking like "close". */
   const onKill = async () => {
     if (!agent.ptyId) return;
-    if (!confirm(t('agentDetail.killConfirm', { name: agent.name }))) return;
+    // Confirmed in place by DeleteButton (bin → ✓ / ✕); runs only after ✓.
     await window.cth.killPty(agent.ptyId);
     disposeTerminal(agent.ptyId);
     // archiveAgent re-homes focus mode to the next agent, and only leaves it when
@@ -1001,19 +1006,13 @@ function Header({ agent, onEdit }: { agent: Agent; onEdit: () => void }) {
           style={{ height: 24, padding: '0 8px', lineHeight: '24px' }}
         />
         {!agent.isGod && (
-          <PixelButton variant="destructive" size="sm" onClick={onKill}>
-            {/* inline-flex + center: the other buttons hold TEXT, whose line box
-                the button centres for free. A bare <Icon> is replaced-content
-                sitting on the text baseline, so it rode low and overhung the
-                24px box — the button measured the same as its neighbours while
-                reading taller than them. */}
-            <span
-              title={t('fullscreenTerminal.closeAgent', { name: agent.name })}
-              style={{ display: 'inline-flex', alignItems: 'center', lineHeight: 0 }}
-            >
-              <Icon name="x" />
-            </span>
-          </PixelButton>
+          <DeleteButton
+            label={t('fullscreenTerminal.closeAgent', { name: agent.name })}
+            description={t('agentDetail.killConfirm', { name: agent.name })}
+            confirmLabel={t('agentDetail.killDo', { name: agent.name })}
+            cancelLabel={t('agentDetail.killKeep', { name: agent.name })}
+            onConfirm={() => { void onKill(); }}
+          />
         )}
       </div>
     </div>

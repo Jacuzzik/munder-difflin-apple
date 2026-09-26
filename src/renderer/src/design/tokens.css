@@ -438,7 +438,12 @@
     radial-gradient(50% 60% at 88% 30%, #F3EDE0 0%, transparent 70%),
     radial-gradient(70% 60% at 60% 100%, #EDDDBF 0%, transparent 70%),
     #FBF4E4;
-  --cth-glass-fill:  rgba(255, 252, 244, 0.66);
+  /* Glass = a colour + a density. The Appearance panel's glass slider moves
+     only --cth-glass-alpha; the reduced-transparency rule below still replaces
+     the whole fill, so accessibility always wins. */
+  --cth-glass-fill:  rgb(var(--cth-glass-rgb) / var(--cth-glass-alpha));
+  --cth-glass-rgb:   255 252 244;
+  --cth-glass-alpha: 0.66;
   --cth-glass-edge:  rgba(255, 255, 255, 0.90);
   --cth-glass-border: rgba(26, 19, 32, 0.07);
   --cth-pill-track:  rgba(26, 19, 32, 0.05);
@@ -459,7 +464,8 @@
     radial-gradient(50% 60% at 90% 35%, #F1F3F7 0%, transparent 70%),
     radial-gradient(70% 60% at 50% 100%, #E6EAF0 0%, transparent 70%),
     #F6F7F9;
-  --cth-glass-fill:  rgba(255, 255, 255, 0.68);
+  --cth-glass-rgb:   255 255 255;
+  --cth-glass-alpha: 0.68;
   --cth-glass-edge:  rgba(255, 255, 255, 0.95);
   --cth-glass-border: rgba(27, 29, 33, 0.07);
   --cth-pill-track:  rgba(27, 29, 33, 0.05);
@@ -476,7 +482,8 @@
     radial-gradient(45% 55% at 90% 30%, #26262A 0%, transparent 70%),
     radial-gradient(70% 60% at 55% 105%, #18181B 0%, transparent 70%),
     #09090A;
-  --cth-glass-fill:  rgba(30, 30, 33, 0.60);
+  --cth-glass-rgb:   30 30 33;
+  --cth-glass-alpha: 0.60;
   --cth-glass-edge:  rgba(255, 255, 255, 0.09);
   --cth-pill-track:  rgba(255, 255, 255, 0.06);
   --cth-pill-active-bg: #E4E4E6;
@@ -492,7 +499,8 @@
     radial-gradient(50% 60% at 85% 20%, #26201C 0%, transparent 70%),
     radial-gradient(60% 60% at 40% 10%, #1D1916 0%, transparent 70%),
     #0D0B0A;
-  --cth-glass-fill:  rgba(46, 40, 36, 0.50);
+  --cth-glass-rgb:   46 40 36;
+  --cth-glass-alpha: 0.50;
   --cth-glass-edge:  rgba(255, 200, 150, 0.09);
   --cth-pill-track:  rgba(255, 255, 255, 0.05);
   --cth-pill-active-bg: #FF8A2B;
@@ -510,7 +518,8 @@
     radial-gradient(55% 60% at 12% 20%, #231B2E 0%, transparent 70%),
     radial-gradient(60% 60% at 50% 0%, #1A1422 0%, transparent 70%),
     #0B0910;
-  --cth-glass-fill:  rgba(44, 34, 56, 0.50);
+  --cth-glass-rgb:   44 34 56;
+  --cth-glass-alpha: 0.50;
   --cth-glass-edge:  rgba(230, 190, 255, 0.09);
   --cth-pill-track:  rgba(255, 255, 255, 0.05);
   --cth-pill-active-bg: #D05FE0;
@@ -546,7 +555,8 @@
     #2F2A26;
   /* Denser than the reference's glass on purpose: over the light side of the
      backdrop the reference's fill leaves ivory text at ~3.6:1. */
-  --cth-glass-fill:   rgba(58, 54, 50, 0.78);
+  --cth-glass-rgb:   58 54 50;
+  --cth-glass-alpha: 0.78;
   --cth-glass-edge:   rgba(255, 255, 255, 0.18);
   --cth-glass-border: rgba(255, 255, 255, 0.09);
   --cth-popover-bg:   #433F3B;

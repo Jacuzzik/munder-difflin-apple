@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PixelButton } from './PixelButton';
 import { useStore } from '@/store/store';
+import { AnimatedCounter } from './rare/AnimatedCounter';
 
 /**
  * WORKERS — live god-triggered ephemeral Slack workers (the Phase-1 spawn loop):
@@ -97,7 +98,7 @@ export function WorkersTab() {
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <span style={sectionHead}>{t('workersTab.liveWorkers')}</span>
           <span style={{ fontFamily: 'var(--cth-font-mono)', fontSize: 11, color: 'var(--cth-ink-700)' }}>
-            {live.length} / {max}
+            <AnimatedCounter value={live.length} /> / {max}
           </span>
         </div>
         <p style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 11, color: 'var(--cth-ink-700)', margin: '2px 0 8px' }}>
