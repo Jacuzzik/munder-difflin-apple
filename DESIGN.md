@@ -35,6 +35,35 @@ Six palettes, one component tree. `design/theme.ts` stamps two attributes on `<h
 - Font stacks must stay identical in `tokens.css` and `tokens.ts` (enforced by `test/bundled-fonts.test.cjs`); the terminal keeps bundled JetBrains Mono first so cell metrics never change.
 - `prefers-reduced-transparency` / `prefers-contrast: more` swap glass for solid surfaces and firmer borders; `prefers-reduced-motion` removes transitions.
 
+### 0.1 Appearance layer (user customization)
+
+`components/AppearancePanel.tsx` (theme menu → **Customize…**) is a floating, non-modal panel over a single state object, `design/appearance.ts`. `applyAppearance()` writes **inline custom properties on `<html>`**, so each choice overrides the palette token of the same name and clearing it falls back to the palette. Nothing else reads the panel's state.
+
+| Control | Writes |
+|---|---|
+| Primary (RGB / hex / preset) | `--cth-pill-active-bg/fg`, `--cth-card-active-bg/fg`, `--cth-accent`, `--cth-accent-soft`, `--cth-focus-ring`. Text-on colour comes from a WCAG contrast pick (`onColor`), shown live in the preview. |
+| Secondary | `--cth-pill-track`, `--cth-selection`, `--cth-hover`, `--cth-pressed`, `--cth-outline` (outlined buttons fall back to `ink-300`). |
+| Heading / body font | `--cth-font-display`, `--cth-display-weight`, `--cth-display-adjust`, `--cth-font-ui`, `--cth-body-adjust` |
+| Background (theme / colour / image) | `--cth-backdrop`, `--cth-bg-dim`, `--cth-bg-blur`, painted by `design/Backdrop.tsx` (one fixed layer behind the app; a `contained` copy inside the full-screen terminal). |
+| Glass opacity | `--cth-glass-alpha` (every palette's fill is `rgb(var(--cth-glass-rgb) / var(--cth-glass-alpha))`; reduced-transparency still wins). |
+| Transparent window | `config.windowTransparency` (read by the main process **once, when a window is created**, so it applies after a restart) + `--cth-window-opacity` on the backdrop only. |
+
+**Rules.**
+- Terminals are never restyled: `.xterm`, Monaco, CodeMirror and every `--cth-font-mono` element are excluded from the body font and its size-adjust, so cell metrics never change.
+- **Fonts.** 34 OFL faces ship in `assets/fonts/library/` (Latin subsets, woff2, credits in its `LICENSE.txt`, `test/font-library.test.cjs` guards validity, attribution, size and that nothing loads remotely). Body text is normalised with `font-size-adjust: 0.53` (the default face's x-height), so a new body font keeps every layout. Display-slot labels (`[style*="--cth-font-display"]`) use `font-size-adjust: var(--cth-display-adjust, 0.7)`; a face that is wide or has a low x-height carries a measured `displayAdjust` in `fontLibrary.ts` so the tightest display row (the agent sidebar tabs) never overflows. When adding a font, measure it in the running app before choosing a value.
+- **Background images** are downscaled in the renderer (≤ 2560×1600, JPEG) and stored in IndexedDB (`cth-appearance` / `images` / `background`), never in config; the CSP already allows `blob:`.
+- **Persistence** follows the palette pattern: localStorage for first paint plus a debounced `config.appAppearance` copy (immediate when the window flag changes).
+- **Transparent window** is opt-in and off by default. Off = the original opaque `BrowserWindow`, byte-for-byte. On Linux the desktop only shows through under a compositing window manager. The backdrop slider enables only once the window was actually created transparent, and panels, text, terminals and the floor always stay opaque.
+
+### 0.2 Motion components (Rare UI)
+
+`components/rare/` holds four components ported from [Rare UI](https://rareui.com) (MIT + Commons Clause + Attribution — see `LICENSE-RAREUI.txt` there; the panel footer and README carry the visible credit). They run on `motion` with `<MotionConfig reducedMotion="user">` at the root, and read only tokens:
+
+- `TabPill` — one sliding pill per tab strip (`LayoutGroup` scoped by `useId`, so the sidebar and focus mode never share a pill).
+- `DeleteButton` — the in-place confirm for closing an agent; replaces `window.confirm()`. ✕ and Escape cancel and return focus; only ✓ runs the original kill path.
+- `MatrixOrb` — Michael's voice state (idle / listening / thinking); the animation loop runs only while voice is active and never under reduced motion.
+- `AnimatedCounter` / `CountText` — digit roll on real counts only (task columns, workers, message queue).
+
 ---
 
 ## 1. Principles

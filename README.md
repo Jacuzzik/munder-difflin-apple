@@ -151,11 +151,45 @@ This fork redesigns the application chrome around the office in an Apple-inspire
 
 ---
 
-**What stays the same:** everything that makes Munder Difflin work. The pixel-art office, its characters and pathfinding, the agents, terminals, tasks, memory, triggers and settings are untouched — no changes to `src/main`, `src/preload`, the Pixi scene or the art assets. Themes reach the office only through a reversible filter on its canvas, and switching themes never restarts an agent, clears a terminal or resets the floor.
+### Make it yours
 
-**Details:** your theme choice persists across restarts; all six palettes meet WCAG AA text contrast on the rendered glass; the app honours your OS reduced-transparency, increased-contrast and reduced-motion settings; and there is no blur anywhere, so the office runs as fast as before (it also renders correctly when Electron falls back to software rendering on Linux). The design rules live in [DESIGN.md](./DESIGN.md#0-chrome-themes-v051--glass-studio).
+Open the theme menu and choose **Customize…** for the Appearance panel. It floats beside the office, so you can see every change on the real app as you make it.
 
-**Try it:** `git clone`, `npm install`, `npm run dev`, then pick a theme from the button at the top right of the window.
+<p align="center">
+  <img src="./docs/appearance-panel.png" width="100%" alt="The Appearance panel: theme, primary and secondary colours with RGB sliders, and font pairings">
+</p>
+
+- **Colours:** a **primary** (active tabs, filled buttons, the selected agent card, focus rings) and a **secondary** (tab track, outlines, highlights, text selection). Set each with RGB sliders, a hex value or a preset. The panel shows the text colour it will use on your primary and its contrast ratio.
+- **Fonts:** 34 bundled open-source typefaces, from Inter, Geist and Plus Jakarta Sans to Playfair, Fraunces, Instrument Serif, Unbounded, Pixelify and VT323. Pick a heading and a body font, or start from 16 ready-made **pairings** (Editorial, Studio, Swiss, Bookish, Arcade, Terminal…). Body text is size-normalised so layouts hold, and terminals always keep their monospace font.
+- **Background:** the theme's backdrop, any colour, or your own image. Images are resized and stored locally, with dim and blur sliders.
+- **Glass:** how solid the panels are.
+- **Transparent window** (opt-in, applies after a restart): lets your desktop show through behind the panels, with a slider for how much. Text, terminals and the office stay solid.
+
+<table>
+  <tr>
+    <td width="50%"><img src="./docs/appearance-wallpaper.png" alt="Smoke theme with a custom image background, Studio font pairing and a gold primary"></td>
+    <td width="50%"><img src="./docs/appearance-arcade.png" alt="Violet theme with the Arcade pixel-font pairing"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Image background · Studio pairing · gold primary</sub></td>
+    <td align="center"><sub>Violet · Arcade pairing (Press Start 2P + Pixelify Sans)</sub></td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="./docs/appearance-transparent.png" width="100%" alt="The transparent window over a desktop wallpaper: the wallpaper shows through behind solid panels">
+  <br><sub>Transparent window over a desktop wallpaper (Linux with a compositor).</sub>
+</p>
+
+**Motion** comes from [**Rare UI**](https://rareui.com): the pill that slides between tabs, the in-place "close agent?" confirm (which replaces the system dialog), the matrix orb that shows Michael's voice state, and rolling counters on the task board, workers and message queue. Everything follows your OS reduced-motion setting.
+
+---
+
+**What stays the same:** everything that makes Munder Difflin work. The pixel-art office, its characters and pathfinding, the agents, terminals, tasks, memory, triggers and settings are untouched. There are no changes to `src/preload`, the Pixi scene or the art assets. The only change in `src/main` is the opt-in transparent-window flag (off by default, so the window is created exactly as before). Themes reach the office only through a reversible filter on its canvas (appearance settings never touch it), and changing either never restarts an agent, clears a terminal or resets the floor.
+
+**Details:** your theme choice persists across restarts; all six palettes meet WCAG AA text contrast on the rendered glass; the app honours your OS reduced-transparency, increased-contrast and reduced-motion settings; and there is no backdrop blur anywhere (the optional image blur is applied once to a static layer), so the office runs as fast as before (it also renders correctly when Electron falls back to software rendering on Linux). The design rules live in [DESIGN.md](./DESIGN.md#0-chrome-themes-v051--glass-studio).
+
+**Try it:** `git clone`, `npm install`, `npm run dev`, then pick a theme from the button at the top right of the window, or choose **Customize…** in that menu.
 
 ## Contents
 
